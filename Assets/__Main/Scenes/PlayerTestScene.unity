@@ -1020,6 +1020,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5088682143008475733, guid: eddb21131ef8a0f44826804ac70db56b, type: 3}
+      propertyPath: type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088682143008475733, guid: eddb21131ef8a0f44826804ac70db56b, type: 3}
+      propertyPath: dashForce
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088682143008475733, guid: eddb21131ef8a0f44826804ac70db56b, type: 3}
+      propertyPath: NormalHeight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088682143008475733, guid: eddb21131ef8a0f44826804ac70db56b, type: 3}
+      propertyPath: crouchHeight
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088682143008475733, guid: eddb21131ef8a0f44826804ac70db56b, type: 3}
+      propertyPath: _dashTimeRate
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088682143008475733, guid: eddb21131ef8a0f44826804ac70db56b, type: 3}
+      propertyPath: dashUpwardForce
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5088682143008475733, guid: eddb21131ef8a0f44826804ac70db56b, type: 3}
+      propertyPath: dashForwardForce
+      value: 200
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

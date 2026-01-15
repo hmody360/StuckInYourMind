@@ -1,7 +1,11 @@
 using UnityEngine;
+using static GameEnums;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public CharacterType type;
+    [Header("Basic Movement")]
+    public PlayerMovementState movementState = PlayerMovementState.Movement;
     public float speed = 10;
     public float runSpeed = 15;
     public float crouchSpeed = 5;
@@ -10,32 +14,48 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 5;
     public float doubleJumpForce = 3;
     public float rotationSpeed = 3;
-    public float NormalHeight = 0.01011984f;
-    public float crouchHeight = 0.006904654f;
+    public float NormalHeight = 1f;
+    public float crouchHeight = 0.6f;
     public bool canMove = true;
 
+    [Header("Saved Values & Components")]
     private Rigidbody _theRigidBody;
     private Quaternion _targetRotation;
     private float _currentSpeed;
+    private Vector3  _playerDirection;
     private Transform _cameraTransform;
     private CapsuleCollider _playerCollider;
     //private Animator _animator;
 
+    [Header("Ground Checking")]
     [SerializeField] private float _groundCheckerOffset = -0.9f;
     [SerializeField] private float _groundCheckerRadius = 0.3f;
     [SerializeField] private LayerMask _groundLayer;
+    [Header("Audio")]
     [SerializeField] private AudioSource[] _SFXSourceList;
     [SerializeField] private AudioClip[] _SFXClipList;
+    [Header("Bool Checkers")]
     [SerializeField] private bool _isGrounded;
     [SerializeField] private bool _isCrouched = false;
     [SerializeField] private bool _isWalking;
     [SerializeField] private bool _isSprinting = false;
+    [Header("Movement Controllers")]
     [SerializeField] private bool _canDoubleJump;
     [SerializeField] private bool _canSprint;
     [SerializeField] private bool _canUncrouch = true;
+    [SerializeField] private bool _canDash = true;
+    [Header("Bored Logic")]
     [SerializeField] private bool _isBored = false;
     [SerializeField] private float _boredTimer = 0;
     [SerializeField] private float _timeTillBored;
+    [Header("Dashing Logic")]
+    [SerializeField] private float _dashSpeed = 25f;
+    [SerializeField] private float _dashExitSpeed = 0.6f;
+    [SerializeField] private float _dashDuration = 0.15f;
+    [SerializeField] private float _dashTimeLeft;
+    [SerializeField] private float _dashTimer = 0;
+    [SerializeField] private float _dashCooldown = 3f;
+    [SerializeField] private TrailRenderer[] _dashTrailRendererList;
     // Start is called once before the first execution of Update after the MonoBehaviour is created.
 
     private void Awake()
@@ -64,6 +84,8 @@ public class PlayerMovement : MonoBehaviour
             jump();
             sprint();
             crouch();
+            Dash();
+            CheckDashTimer();
             CheckBoredTimer();
         }
 
@@ -75,9 +97,16 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame.
     void FixedUpdate()
     {
-        if (canMove) //if player can move (Not Dead) allow them to move
+        if (!canMove)
+        {
+            return;
+        }
+        if (movementState == PlayerMovementState.Movement) //if player can move (Not Dead) allow them to move
         {
             moveAndRotate();
+        }else if (movementState == PlayerMovementState.Dashing)
+        {
+            PerformDash();
         }
 
 
@@ -137,7 +166,9 @@ public class PlayerMovement : MonoBehaviour
         Vector3 forwardRealtive = Vertical * cameraForward;
         Vector3 rightRealtive = Horizontal * cameraRight;
 
-        Vector3 movementDir = (forwardRealtive + rightRealtive).normalized * _currentSpeed; //assigning movement with camera direction in mind, also using normalized to make movement in corner dierctions the same as normal directions (not faster)
+        _playerDirection = (forwardRealtive + rightRealtive).normalized;
+
+        Vector3 movementDir = _playerDirection * _currentSpeed; //assigning movement with camera direction in mind, also using normalized to make movement in corner dierctions the same as normal directions (not faster)
 
         //Movement
         _theRigidBody.linearVelocity = new Vector3(movementDir.x, _theRigidBody.linearVelocity.y, movementDir.z); // Changing the velocity based on Horizontal and Vertical Movements alongside camera direction.
@@ -215,7 +246,7 @@ public class PlayerMovement : MonoBehaviour
         {
             //_playerCollider.center = new Vector3(0f, 0.003449329f, 0f);
             //_playerCollider.height = crouchHeight;
-            transform.localScale = new Vector3(1f,0.6f,1f);
+            transform.localScale = new Vector3(1f, crouchHeight, 1f);
             _isCrouched = true;
             //_animator.SetBool("isCrouched", _isCrouched);
             _currentSpeed = crouchSpeed;
@@ -231,7 +262,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (_isCrouched && _canUncrouch && Input.GetKeyDown(KeyCode.LeftControl))
         {
-            transform.localScale = new Vector3(1f, 1f, 1f);
+            transform.localScale = new Vector3(1f, NormalHeight, 1f);
             //_playerCollider.center = new Vector3(0f, 0.005028358f, 0f);
             //_playerCollider.height = NormalHeight;
             _isCrouched = false;
@@ -248,6 +279,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Bored Logic
     private void CheckBoredTimer()
     {
         if (!_isWalking)
@@ -273,9 +305,62 @@ public class PlayerMovement : MonoBehaviour
         _boredTimer += Time.deltaTime;
     }
 
-    public bool getIsCrouched()
+    //Dash Logic
+    private void Dash()
     {
-        return _isCrouched;
+        if (Input.GetKeyDown(KeyCode.Q) && _canDash && !_isCrouched && type == CharacterType.Mohammed)
+        {
+            movementState = PlayerMovementState.Dashing;
+            _canDash = false;
+            _dashTimeLeft = _dashDuration;
+            ToggleDashTrails(true);
+            _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
+        }
+    }
+
+    private void PerformDash()
+    {
+        Vector3 dashDirection = (_playerDirection != Vector3.zero) ? _playerDirection : transform.forward;
+        _theRigidBody.linearVelocity = new Vector3(
+            dashDirection.x * _dashSpeed,
+            _theRigidBody.linearVelocity.y,
+            dashDirection.z * _dashSpeed);
+
+        _dashTimeLeft -= Time.fixedDeltaTime;
+
+        if (_dashTimeLeft <= 0f)
+        {
+            movementState = PlayerMovementState.Movement;
+            ToggleDashTrails(false);
+
+            _theRigidBody.linearVelocity *= _dashExitSpeed;
+
+        }
+
+        
+    }
+
+    private void CheckDashTimer() {
+        if (!_canDash) {
+            StartDashRateTimer();
+        }
+        if (_dashTimer >= _dashCooldown && _isGrounded){
+            _dashTimer = 0; _canDash = true;
+        }
+    }
+    private void StartDashRateTimer()
+    {
+
+        _dashTimer += Time.deltaTime;
+
+    }
+
+    private void ToggleDashTrails(bool toggle)
+    {
+        foreach(TrailRenderer renderer in _dashTrailRendererList)
+        {
+            renderer.emitting = toggle;
+        }
     }
 
     private void OnDrawGizmos() //Gizmo to draw the ground checker sphere.
