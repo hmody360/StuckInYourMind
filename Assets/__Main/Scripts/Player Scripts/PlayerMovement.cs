@@ -1,61 +1,90 @@
 using UnityEngine;
 using static GameEnums;
+using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 public class PlayerMovement : MonoBehaviour
 {
     public CharacterType type;
-    [Header("Basic Movement")]
-    public PlayerMovementState movementState = PlayerMovementState.Movement;
+    [Header("Movement")]
+    [SerializeField] private PlayerMovementState movementState = PlayerMovementState.Movement;
     public float speed = 10;
     public float runSpeed = 15;
     public float crouchSpeed = 5;
-    public float maxStamina = 20;
-    public float currentStamina = 20;
-    public float jumpForce = 5;
-    public float doubleJumpForce = 3;
     public float rotationSpeed = 3;
-    public float NormalHeight = 1f;
-    public float crouchHeight = 0.6f;
     public bool canMove = true;
 
-    [Header("Saved Values & Components")]
-    private Rigidbody _theRigidBody;
-    private Quaternion _targetRotation;
-    private float _currentSpeed;
-    private Vector3  _playerDirection;
-    private Transform _cameraTransform;
-    private CapsuleCollider _playerCollider;
-    //private Animator _animator;
+    [Header("Jump")]
+    public float jumpForce = 5;
+    public float doubleJumpForce = 3;
+
+    [Header("Stamina")]
+    public float maxStamina = 20;
+    public float currentStamina = 20;
+
+    [Header("Player Collider Size")]
+    public float NormalHeight = 1f;
+    public float crouchHeight = 0.6f;
 
     [Header("Ground Checking")]
     [SerializeField] private float _groundCheckerOffset = -0.9f;
     [SerializeField] private float _groundCheckerRadius = 0.3f;
     [SerializeField] private LayerMask _groundLayer;
+
+    [Header("Special Ability Logic")]
+    [SerializeField] private float _saSpeed = 25f;
+    [SerializeField] private float _saExitSpeed = 0.6f;
+    [SerializeField] private float _saDuration = 0.15f;
+    [SerializeField] private float _saCooldown = 3f;
+    [SerializeField] private TrailRenderer[] _saRendererList;
+    [SerializeField] private GameObject GroundImpactPrefab;
+    [SerializeField] private float _groundImpactOffset = 0.3f;
+
     [Header("Audio")]
     [SerializeField] private AudioSource[] _SFXSourceList;
     [SerializeField] private AudioClip[] _SFXClipList;
+
+    //Components
+    private Rigidbody _theRigidBody;
+    private Transform _cameraTransform;
+    private CapsuleCollider _playerCollider;
+    private PlayerInputHandler _input;
+    //private Animator _animator;
+
+    //Input States
+    private Vector2 _moveInput;
+    private bool _JumpPressed;
+    private bool _sprintHeld;
+    private bool _crouchPressed;
+    private bool _specialPressed;
+
+    // Runtime Changing Values
+
     [Header("Bool Checkers")]
     [SerializeField] private bool _isGrounded;
     [SerializeField] private bool _isCrouched = false;
     [SerializeField] private bool _isWalking;
     [SerializeField] private bool _isSprinting = false;
+    [SerializeField] private bool _isUsingSpecial = false;
+
     [Header("Movement Controllers")]
     [SerializeField] private bool _canDoubleJump;
-    [SerializeField] private bool _canSprint;
+    [SerializeField] private bool _canSprint = true;
     [SerializeField] private bool _canUncrouch = true;
-    [SerializeField] private bool _canDash = true;
+    [SerializeField] private bool _canUseSpecialAbility = true;
+
     [Header("Bored Logic")]
     [SerializeField] private bool _isBored = false;
     [SerializeField] private float _boredTimer = 0;
-    [SerializeField] private float _timeTillBored;
-    [Header("Dashing Logic")]
-    [SerializeField] private float _dashSpeed = 25f;
-    [SerializeField] private float _dashExitSpeed = 0.6f;
-    [SerializeField] private float _dashDuration = 0.15f;
-    [SerializeField] private float _dashTimeLeft;
-    [SerializeField] private float _dashTimer = 0;
-    [SerializeField] private float _dashCooldown = 3f;
-    [SerializeField] private TrailRenderer[] _dashTrailRendererList;
+    [SerializeField] private float _timeTillBored = 10f;
+
+    [Header("Cooldown and speed Logic")]
+    [SerializeField] private float _saTimeLeft;
+    [SerializeField] private float _saCooldownTimer;
+    [SerializeField] private float _currentSpeed;
+
+    private Quaternion _targetRotation;
+    private Vector3 _playerDirection;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created.
 
     private void Awake()
@@ -64,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
         _playerCollider = GetComponent<CapsuleCollider>();
         //_animator = GetComponent<Animator>();
         _cameraTransform = Camera.main.transform;
+        _input = GetComponent<PlayerInputHandler>();
     }
     void Start()
     {
@@ -77,54 +107,84 @@ public class PlayerMovement : MonoBehaviour
         //GameUIManager.instance.SetEnergyFill(currentStamina, maxStamina);
     }
 
+
+    // Input Handlers (New Input System)
+
+    private void OnEnable()
+    {
+        _input.OnMove += v => _moveInput = v;
+        _input.OnJump += () => _JumpPressed = true;
+        _input.OnSprint += held => _sprintHeld = held;
+        _input.onCoruch += () => _crouchPressed = true ;
+        _input.onSpecial += () => _specialPressed = true;
+    }
+
+    private void OnDisable()
+    {
+        _input.OnMove -= v => _moveInput = v;
+        _input.OnJump -= () => _JumpPressed = true;
+        _input.OnSprint -= held => _sprintHeld = held;
+        _input.onCoruch -= () => _crouchPressed = true;
+        _input.onSpecial -= () => _specialPressed = true;
+    }
+
     private void Update()
     {
-        if (canMove) //if player can move (Not Dead) allow them to jump, sprint and crouch
+
+        if(movementState == PlayerMovementState.Disabled)
         {
-            jump();
-            sprint();
-            crouch();
-            Dash();
-            CheckDashTimer();
-            CheckBoredTimer();
+            ResetFrameInput();
+            return;
         }
 
+        CheckGround();
+        HandleJump();
+        HandleSprint();
+        HandleCrouch();
+        HandleSA();
+        HandleCooldowns();
+        CheckBoredTimer();
 
-
-
+        ResetFrameInput();
+        
     }
 
     // Update is called once per frame.
     void FixedUpdate()
     {
-        if (!canMove)
+
+        if (movementState == PlayerMovementState.Disabled)
         {
             return;
         }
-        if (movementState == PlayerMovementState.Movement) //if player can move (Not Dead) allow them to move
+
+        switch (movementState)
         {
-            moveAndRotate();
-        }else if (movementState == PlayerMovementState.Dashing)
-        {
-            PerformDash();
+            case PlayerMovementState.Movement:
+                moveAndRotate();
+                break;
+            case PlayerMovementState.Dashing:
+                PerformDash();
+                break;
+            case PlayerMovementState.Bashing:
+                PerformBash();
+                break;
+            default:
+                break;
         }
 
 
 
     }
 
-    public void toggleUncroucher(bool toggle) // activate/deactivate ability to uncrouch
-    {
-        _canUncrouch = toggle;
-    }
-
+    // Movement Logic
     private void moveAndRotate()
     {
-        _isGrounded = Physics.CheckSphere(transform.position + Vector3.up * _groundCheckerOffset, _groundCheckerRadius, _groundLayer); //Checking if player is on ground.
-        float Horizontal = Input.GetAxisRaw("Horizontal"); //Defining Char X Axis.
-        float Vertical = Input.GetAxisRaw("Vertical"); //Defining Char Z Axis.
 
-        _isWalking = ((Horizontal != 0 || Vertical != 0) && _isGrounded); //Check if player is walking to play walkingSFX
+        float Horizontal = _moveInput.x; //Defining Char X Axis using the new input system.
+        float Vertical = _moveInput.y; //Defining Char Z Axis using the new input system.
+
+        _isWalking = _moveInput.sqrMagnitude > 0.01f && _isGrounded; //Check if player is walking to play walkingSFX
         //_animator.SetBool("isWalking", _isWalking);
         //_animator.SetBool("isGrounded", _isGrounded);
 
@@ -135,27 +195,12 @@ public class PlayerMovement : MonoBehaviour
         else if (!_isWalking && _SFXSourceList[0].isPlaying) //if player STOPPED walking and the walking audio source is playing, stop it.
         {
             _SFXSourceList[0].Stop();
-            
+
         }
 
-        //Stamina Checking
-        if (_isWalking && _isSprinting)
-        {
-            currentStamina -= Time.deltaTime;
-            //GameUIManager.instance.SetEnergyFill(currentStamina, maxStamina);
-        }
-        else if (!_isSprinting)
-        {
-            if(currentStamina < maxStamina)
-            {
-                currentStamina += Time.deltaTime;
-                //GameUIManager.instance.SetEnergyFill(currentStamina, maxStamina);
-            }
-        }
-
-            // Camera Controls (for Realtive Movement)
-            // Taking the Camera Forward and Right
-            Vector3 cameraForward = _cameraTransform.forward;
+        // Camera Controls (for Realtive Movement)
+        // Taking the Camera Forward and Right
+        Vector3 cameraForward = _cameraTransform.forward;
         Vector3 cameraRight = _cameraTransform.right;
 
         //freezing the camera's y axis as we don't want it to be affected for the direction
@@ -173,21 +218,43 @@ public class PlayerMovement : MonoBehaviour
         //Movement
         _theRigidBody.linearVelocity = new Vector3(movementDir.x, _theRigidBody.linearVelocity.y, movementDir.z); // Changing the velocity based on Horizontal and Vertical Movements alongside camera direction.
 
-        //Rotation
-        Vector3 lookDirection = movementDir; //Taking the Direction of the player
 
-        if (lookDirection != Vector3.zero) //on player movement
+        if (_playerDirection != Vector3.zero) //on player movement
         {
-            _targetRotation = Quaternion.LookRotation(lookDirection); // makes the target rotation that we want the player to move to
-        }
+            _targetRotation = Quaternion.LookRotation(_playerDirection); // makes the target rotation that we want the player to move to
 
+        }
         _theRigidBody.MoveRotation(Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeed * Time.deltaTime)); //Using lerp to smooth the player rotation using current rotation, target rotaion and rotation speed.
+
     }
 
-    private void jump()
+    public void DisableMovement()
     {
+        movementState = PlayerMovementState.Disabled;
+        _isSprinting = false;
+        _isUsingSpecial = false;
+        _canUseSpecialAbility = false;
+
+        _theRigidBody.linearVelocity = Vector3.zero;
+        UpdateTrails();
+
+        //_animator.SetBool("isDead", true); 
+    }
+
+    private void ResetFrameInput()
+    {
+        _JumpPressed = false;
+        _crouchPressed = false;
+        _specialPressed = false;
+    }
+
+    // Jump Logic =======================================================================
+
+    private void HandleJump()
+    {
+        if (!_JumpPressed || _isCrouched) return;
         // Allow Player to jump if on ground and jump button pressed.
-        if (_isGrounded && !_isCrouched && Input.GetButtonDown("Jump"))
+        if (_isGrounded)
         {
             _theRigidBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             _canDoubleJump = true;
@@ -195,7 +262,7 @@ public class PlayerMovement : MonoBehaviour
             _SFXSourceList[1].PlayOneShot(_SFXClipList[3]);
         }
         // Allow Player to double jump if NOT on ground and jump button pressed.
-        if (!_isGrounded && !_isCrouched && _canDoubleJump && Input.GetButtonDown("Jump"))
+        else if (_canDoubleJump)
         {
             _theRigidBody.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
             _canDoubleJump = false;
@@ -206,61 +273,66 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    private void sprint()
+    // Sprint Logic =======================================================================
+
+    private void HandleSprint()
     {
+        _isSprinting = _isGrounded && !_isCrouched && _canSprint && _sprintHeld && _isWalking;
+        _currentSpeed = _isSprinting ? runSpeed : (_isCrouched ? crouchSpeed : speed);
+
         //Sprint Code
-        if (_isGrounded && !_isCrouched && _canSprint && Input.GetKey(KeyCode.LeftShift) && _isWalking)
+        if (_isSprinting)
         {
+            currentStamina -= Time.deltaTime;
+
+            //Stamina Code
+            if (currentStamina <= 0)
+            {
+                currentStamina = 0;
+                _canSprint = false;
+                _SFXSourceList[3].PlayOneShot(_SFXClipList[7]);
+            }
+
             _SFXSourceList[0].clip = _SFXClipList[2];
-            _currentSpeed = runSpeed;
-            _isSprinting = true;
             //_animator.SetBool("isSprinting", _isSprinting);
         }
-        else if ((Input.GetKeyUp(KeyCode.LeftShift) || !_canSprint || !_isWalking) && !_isCrouched)
+        else if (currentStamina < maxStamina)
         {
+            currentStamina += Time.deltaTime;
+            if (currentStamina >= maxStamina)
+            {
+                currentStamina = maxStamina;
+                _canSprint = true;
+            }
             _SFXSourceList[0].clip = _SFXClipList[0];
-            _currentSpeed = speed;
-            _isSprinting = false;
             //_animator.SetBool("isSprinting", _isSprinting);
         }
 
-        //Stamina Code
-        if (currentStamina <= 0)
-        {
-            currentStamina = 0;
-            _canSprint = false;
-            _SFXSourceList[3].PlayOneShot(_SFXClipList[7]);
-        }
-
-        if (currentStamina >= maxStamina)
-        {
-            currentStamina = maxStamina;
-            _canSprint = true;
-        }
+        UpdateTrails();
     }
 
-    private void crouch()
+    // Crouch Logic =======================================================================
+
+    private void HandleCrouch()
     {
+        if (!_crouchPressed)
+        {
+            return;
+        }
+
         //Crouch Code
-        if (_isGrounded && !_isCrouched && !_isSprinting && Input.GetKeyDown(KeyCode.LeftControl))
+        if (_isGrounded && !_isCrouched && !_isSprinting)
         {
             //_playerCollider.center = new Vector3(0f, 0.003449329f, 0f);
             //_playerCollider.height = crouchHeight;
             transform.localScale = new Vector3(1f, crouchHeight, 1f);
             _isCrouched = true;
             //_animator.SetBool("isCrouched", _isCrouched);
-            _currentSpeed = crouchSpeed;
             _SFXSourceList[0].clip = _SFXClipList[1];
-
-            if (_isWalking)
-            {
-                _SFXSourceList[0].Stop();
-                _SFXSourceList[0].Play();
-            }
 
             _SFXSourceList[2].PlayOneShot(_SFXClipList[5]);
         }
-        else if (_isCrouched && _canUncrouch && Input.GetKeyDown(KeyCode.LeftControl))
+        else if (_isCrouched && _canUncrouch)
         {
             transform.localScale = new Vector3(1f, NormalHeight, 1f);
             //_playerCollider.center = new Vector3(0f, 0.005028358f, 0f);
@@ -269,17 +341,17 @@ public class PlayerMovement : MonoBehaviour
             //_animator.SetBool("isCrouched", _isCrouched);
             _currentSpeed = speed;
             _SFXSourceList[0].clip = _SFXClipList[0];
-            if (_isWalking)
-            {
-                _SFXSourceList[0].Stop();
-                _SFXSourceList[0].Play();
-            }
 
             _SFXSourceList[2].PlayOneShot(_SFXClipList[6]);
         }
     }
 
-    // Bored Logic
+    public void toggleUncroucher(bool toggle) // activate/deactivate ability to uncrouch
+    {
+        _canUncrouch = toggle;
+    }
+
+    // Bored Logic =======================================================================
     private void CheckBoredTimer()
     {
         if (!_isWalking)
@@ -305,64 +377,133 @@ public class PlayerMovement : MonoBehaviour
         _boredTimer += Time.deltaTime;
     }
 
-    //Dash Logic
-    private void Dash()
+    // Special Abilities ==============================================================================================================================================
+
+    void HandleSA()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && _canDash && !_isCrouched && type == CharacterType.Mohammed)
+        if (!_specialPressed || !_canUseSpecialAbility || _isCrouched)
         {
-            movementState = PlayerMovementState.Dashing;
-            _canDash = false;
-            _dashTimeLeft = _dashDuration;
-            ToggleDashTrails(true);
-            _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
+            return;
         }
+
+        if (type == CharacterType.Mohammed)
+        {
+            StartDash();
+        }
+        else if (type == CharacterType.Omar && !_isGrounded)
+        {
+            StartBash();
+        }
+    }
+
+    private void HandleCooldowns()
+    {
+        if(_canUseSpecialAbility)
+        {
+            return;
+        }
+
+        _saCooldownTimer += Time.deltaTime;
+        if(_saCooldownTimer >= _saCooldown && _isGrounded)
+        {
+            _saCooldownTimer = 0;
+            _canUseSpecialAbility = true;
+        }
+    }
+
+    private void UpdateTrails()
+    {
+        if(_saRendererList.Length == 0)
+        {
+            return;
+        }
+        bool active = _isSprinting || _isUsingSpecial;
+        foreach (TrailRenderer renderer in _saRendererList)
+        {
+            renderer.emitting = active;
+        }
+    }
+
+    // Water Dash Logic =======================================================================
+    private void StartDash()
+    {
+        movementState = PlayerMovementState.Dashing;
+        _canUseSpecialAbility = false;
+        _isUsingSpecial = true;
+        _saTimeLeft = _saDuration;
+        _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
+        UpdateTrails();
     }
 
     private void PerformDash()
     {
         Vector3 dashDirection = (_playerDirection != Vector3.zero) ? _playerDirection : transform.forward;
         _theRigidBody.linearVelocity = new Vector3(
-            dashDirection.x * _dashSpeed,
+            dashDirection.x * _saSpeed,
             _theRigidBody.linearVelocity.y,
-            dashDirection.z * _dashSpeed);
+            dashDirection.z * _saSpeed);
 
-        _dashTimeLeft -= Time.fixedDeltaTime;
-
-        if (_dashTimeLeft <= 0f)
-        {
-            movementState = PlayerMovementState.Movement;
-            ToggleDashTrails(false);
-
-            _theRigidBody.linearVelocity *= _dashExitSpeed;
-
-        }
+        FinishSA();
 
         
     }
+    // Fiery Ground Bash =======================================================================
 
-    private void CheckDashTimer() {
-        if (!_canDash) {
-            StartDashRateTimer();
-        }
-        if (_dashTimer >= _dashCooldown && _isGrounded){
-            _dashTimer = 0; _canDash = true;
-        }
-    }
-    private void StartDashRateTimer()
+    private void StartBash()
     {
-
-        _dashTimer += Time.deltaTime;
-
+        movementState = PlayerMovementState.Bashing;
+        _canUseSpecialAbility = false;
+        _isUsingSpecial = true;
+        _saTimeLeft = _saDuration;
+        _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
+        UpdateTrails();
     }
 
-    private void ToggleDashTrails(bool toggle)
+    private void PerformBash()
     {
-        foreach(TrailRenderer renderer in _dashTrailRendererList)
+        _theRigidBody.linearVelocity = new Vector3(_theRigidBody.linearVelocity.x
+            , Vector3.down.y * _saSpeed,
+            _theRigidBody.linearVelocity.z
+            );
+
+        FinishSA();
+    }
+
+    private void FinishSA()
+    {
+        if(type == CharacterType.Mohammed)
         {
-            renderer.emitting = toggle;
+            _saTimeLeft -= Time.fixedDeltaTime;
+
+            if (_saTimeLeft <= 0)
+            {
+                _isUsingSpecial = false;
+                movementState = PlayerMovementState.Movement;
+                _theRigidBody.linearVelocity *= _saExitSpeed;
+                UpdateTrails();
+            }
+        }else if (type == CharacterType.Omar)
+        {
+            if (_isGrounded)
+            {
+                _isUsingSpecial = false;
+                movementState = PlayerMovementState.Movement;
+                _theRigidBody.linearVelocity *= _saExitSpeed;
+                UpdateTrails();
+                Instantiate(GroundImpactPrefab, (transform.position + Vector3.up * _groundImpactOffset), Quaternion.identity);
+            }
         }
+
+
+
     }
 
+    private void CheckGround()
+    {
+        _isGrounded = Physics.CheckSphere(transform.position + Vector3.up * _groundCheckerOffset, _groundCheckerRadius, _groundLayer); //Checking if player is on ground.
+    }
+
+    // Gizmos =======================================================================
     private void OnDrawGizmos() //Gizmo to draw the ground checker sphere.
     {
         Gizmos.color = Color.red;

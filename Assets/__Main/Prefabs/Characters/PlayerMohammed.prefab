@@ -363,8 +363,10 @@ GameObject:
   - component: {fileID: 5088682143008475733}
   - component: {fileID: 8767681076826019551}
   - component: {fileID: 2728711836601550346}
+  - component: {fileID: 5016711064584326171}
+  - component: {fileID: 2334197737102534340}
   m_Layer: 0
-  m_Name: Player
+  m_Name: PlayerMohammed
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -507,24 +509,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37fa781174d5f8d4687ffffc16a876fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  type: 0
-  movementState: 0
+  type: 1
+  movementState: 1
   speed: 10
   runSpeed: 15
   crouchSpeed: 5
-  maxStamina: 20
-  currentStamina: 20
+  rotationSpeed: 3
+  canMove: 1
   jumpForce: 10
   doubleJumpForce: 5
-  rotationSpeed: 3
+  maxStamina: 20
+  currentStamina: 20
   NormalHeight: 0.01011984
   crouchHeight: 0.006904654
-  canMove: 1
   _groundCheckerOffset: -0.9
   _groundCheckerRadius: 0.3
   _groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  _saSpeed: 25
+  _saExitSpeed: 0.6
+  _saDuration: 0.15
+  _saCooldown: 3
+  _saRendererList:
+  - {fileID: 8961719760466933336}
+  - {fileID: 4971307134488344232}
+  - {fileID: 3751498048480618227}
   _SFXSourceList:
   - {fileID: 7855372418782883547}
   - {fileID: 5788292430525801743}
@@ -544,23 +554,14 @@ MonoBehaviour:
   _isCrouched: 0
   _isWalking: 0
   _isSprinting: 0
+  _isUsingSpecial: 0
   _canDoubleJump: 0
-  _canSprint: 0
+  _canSprint: 1
   _canUncrouch: 1
-  _canDash: 1
+  _canUseSpecialAbility: 1
   _isBored: 0
   _boredTimer: 0
-  _timeTillBored: 0
-  _dashSpeed: 25
-  _dashExitSpeed: 0.6
-  _dashDuration: 0.15
-  _dashTimeLeft: 0
-  _dashTimer: 0
-  _dashCooldown: 1
-  _dashTrailRendererList:
-  - {fileID: 8961719760466933336}
-  - {fileID: 4971307134488344232}
-  - {fileID: 3751498048480618227}
+  _timeTillBored: 10
 --- !u!114 &8767681076826019551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,6 +594,48 @@ MonoBehaviour:
   currentHealth: 0
   _damageAudioSource: {fileID: 5496517802245649017}
   _damageAudioClips: []
+--- !u!114 &5016711064584326171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2352748427257522548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_NotificationBehavior: 3
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!114 &2334197737102534340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2352748427257522548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc26c61825bfeb41a6ef5c8482f87a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInputHandler
 --- !u!1 &2794902924322665612
 GameObject:
   m_ObjectHideFlags: 0
