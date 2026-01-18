@@ -11,7 +11,6 @@ public class PlayerMovement : MonoBehaviour
     public float runSpeed = 15;
     public float crouchSpeed = 5;
     public float rotationSpeed = 3;
-    public bool canMove = true;
 
     [Header("Jump")]
     public float jumpForce = 5;
@@ -115,8 +114,8 @@ public class PlayerMovement : MonoBehaviour
         _input.OnMove += v => _moveInput = v;
         _input.OnJump += () => _JumpPressed = true;
         _input.OnSprint += held => _sprintHeld = held;
-        _input.onCoruch += () => _crouchPressed = true ;
-        _input.onSpecial += () => _specialPressed = true;
+        _input.OnCrouch += () => _crouchPressed = true ;
+        _input.OnSpecial += () => _specialPressed = true;
     }
 
     private void OnDisable()
@@ -124,8 +123,8 @@ public class PlayerMovement : MonoBehaviour
         _input.OnMove -= v => _moveInput = v;
         _input.OnJump -= () => _JumpPressed = true;
         _input.OnSprint -= held => _sprintHeld = held;
-        _input.onCoruch -= () => _crouchPressed = true;
-        _input.onSpecial -= () => _specialPressed = true;
+        _input.OnCrouch -= () => _crouchPressed = true;
+        _input.OnSpecial -= () => _specialPressed = true;
     }
 
     private void Update()
@@ -146,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
         CheckBoredTimer();
 
         ResetFrameInput();
-        
+
     }
 
     // Update is called once per frame.
@@ -177,6 +176,21 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    // Getters
+    public bool GetIsCrouched()
+    {
+        return _isCrouched;
+    }
+
+    public bool GetIsGrounded()
+    {
+        return _isGrounded;
+    }
+
+    public PlayerMovementState GetMovementState()
+    {
+        return movementState;
+    }
     // Movement Logic
     private void moveAndRotate()
     {
@@ -379,7 +393,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Special Abilities ==============================================================================================================================================
 
-    void HandleSA()
+    private void HandleSA()
     {
         if (!_specialPressed || !_canUseSpecialAbility || _isCrouched)
         {
@@ -493,9 +507,6 @@ public class PlayerMovement : MonoBehaviour
                 Instantiate(GroundImpactPrefab, (transform.position + Vector3.up * _groundImpactOffset), Quaternion.identity);
             }
         }
-
-
-
     }
 
     private void CheckGround()
