@@ -8,8 +8,8 @@ public class PlayerAttack : MonoBehaviour
     private PlayerOffenseState _offenseState = PlayerOffenseState.Neutral;
 
     [Header("Attack Modfiers")]
-    [SerializeField] private bool _attackPressed;
     [SerializeField] private GameObject _attackArmPrefab;
+    private Collider _armCollider;
     [SerializeField] private float _attackTimeLeft;
     [SerializeField] private float _attackDuration = 0.15f;
     [SerializeField] private float _attackCooldown = 3f;
@@ -18,7 +18,6 @@ public class PlayerAttack : MonoBehaviour
 
 
     [Header("Shoot Modfiers")]
-    [SerializeField] private bool _shootPressed;
     [SerializeField] private float _shotPointForwardOffset = 2f;
     [SerializeField] private float _shotPointUpOffset = 0.3f;
     [SerializeField] private float _shotPointRightOffset = 1f;
@@ -32,72 +31,57 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private AudioSource[] _audioSources;
     [SerializeField] private AudioClip[] _audioClips;
 
-    [Header("bool Indicators")]
-    [SerializeField] private bool _isAttacking;
-    [SerializeField] private bool _isShooting;
     //Components
     //private Animator _animator;
     private PlayerInputHandler _input;
     private PlayerMovement _playerMovement;
+    private Transform _cameraTransform;
+
     private void Awake()
     {
         //_animator = GetComponent<Animator>();
         _input = GetComponent<PlayerInputHandler>();
         _playerMovement = GetComponent<PlayerMovement>();
+        _cameraTransform = Camera.main.transform;
 
+        if (_attackArmPrefab != null)
+        {
+            if (_attackArmPrefab.TryGetComponent(out AttackImpact attackImpact))
+            {
+                attackImpact.attackPower = _attackDamage;
+            }
+
+            _attackArmPrefab.TryGetComponent(out _armCollider);
+                if(_armCollider != null)
+            {
+                _armCollider.enabled = false;
+            }
+        }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        if (_attackArmPrefab != null && _attackArmPrefab.GetComponent<AttackImpact>() != null && _attackArmPrefab.GetComponent<Collider>() != null)
-        {
-            _attackArmPrefab.GetComponent<AttackImpact>().attackPower = _attackDamage;
-            _attackArmPrefab.GetComponent<Collider>().enabled = false;
-        }
-
-        if (_shotPrefab.GetComponent<ShotImpact>() != null)
-        {
-            _shotPrefab.GetComponent<ShotImpact>().shotDamage = _shootDamage;
-        }
-
-    }
 
     private void Update()
     {
         if (_offenseState == PlayerOffenseState.Disabled)
         {
-            ResetFrameInputs();
             return;
         }
 
-        HandleAttack();
-        HandleShooting();
-        HandleAttackCooldowns();
-        HandleShootCooldowns();
-        ResetFrameInputs();
+        HandleCooldowns();
     }
 
     private void FixedUpdate()
     {
-        if (_offenseState == PlayerOffenseState.Disabled)
+        if (_offenseState == PlayerOffenseState.Attacking)
         {
-            return;
-        }
-
-        switch (_offenseState)
-        {
-            case PlayerOffenseState.Attacking:
-                PerformAttack();
-                break;
-            case PlayerOffenseState.Shooting:
-                PerformShooting();
-                break;
+            UpdateAttackTimer();
         }
     }
 
     public void DisableOffense()
     {
         _offenseState = PlayerOffenseState.Disabled;
+        _armCollider.enabled = false;
     }
 
     public void EnableOffense()
@@ -107,115 +91,104 @@ public class PlayerAttack : MonoBehaviour
 
     private void OnEnable()
     {
-        _input.OnAttack += () => _attackPressed = true;
-        _input.OnShoot += () => _shootPressed = true;
+        _input.OnAttack += TryStartAttack;
+        _input.OnShoot += TryStartShoot;
     }
 
     private void OnDisable()
     {
-        _input.OnAttack -= () => _attackPressed = true;
-        _input.OnShoot -= () => _shootPressed = true;
-    }
-
-    private void ResetFrameInputs()
-    {
-        _attackPressed = false;
-        _shootPressed = false;
+        _input.OnAttack -= TryStartAttack;
+        _input.OnShoot -= TryStartShoot;
     }
 
     // ============== Player Attacking ==============
-    private void HandleAttack()
+    private void TryStartAttack()
     {
-        if (!_attackPressed || !canAttack || _isShooting || _playerMovement.GetIsCrouched() || !_playerMovement.GetIsGrounded())
+        if (!canAttack || _offenseState != PlayerOffenseState.Neutral || _playerMovement.GetIsCrouched() || !_playerMovement.GetIsGrounded())
         {
             return;
         }
         _offenseState = PlayerOffenseState.Attacking;
         canAttack = false;
-        _isAttacking = true;
         _attackTimeLeft = _attackDuration;
-    }
-
-    private void HandleAttackCooldowns()
-    {
-        if (canAttack)
-        {
-            return;
-        }
-
-        _attackCooldownTimer += Time.deltaTime;
-
-        if (_attackCooldownTimer >= _attackCooldown)
-        {
-            _attackCooldownTimer = 0;
-            canAttack = true;
-        }
-    }
-
-    private void PerformAttack()
-    {
-
-        _attackArmPrefab.GetComponent<Collider>().enabled = true;
+        _armCollider.enabled = true;
         // Play Punch Animation
         // PLayer Punch Sound
-
-        FinishAttack();
     }
 
-    private void FinishAttack()
+    private void HandleCooldowns()
+    {
+        if (!canAttack)
+        {
+            _attackCooldownTimer += Time.deltaTime;
+
+            if (_attackCooldownTimer >= _attackCooldown)
+            {
+                _attackCooldownTimer = 0;
+                canAttack = true;
+            }
+        }
+
+        if (!canShoot)
+        {
+            _shootCooldownTimer += Time.deltaTime;
+
+            if (_shootCooldownTimer >= _shootCooldown)
+            {
+                _shootCooldownTimer = 0;
+                canShoot = true;
+            }
+        }
+        
+
+    }
+
+    private void UpdateAttackTimer()
     {
         _attackTimeLeft -= Time.fixedDeltaTime;
         if (_attackTimeLeft <= 0)
         {
-            _attackArmPrefab.GetComponent<Collider>().enabled = false;
+            _armCollider.enabled = false;
             _offenseState = PlayerOffenseState.Neutral;
-            _isAttacking = false;
         }
     }
 
     // ============== Player Attacking ==============
-    private void HandleShooting()
+    private void TryStartShoot()
     {
-        if (!_shootPressed || !canShoot || _isAttacking || _playerMovement.GetIsCrouched() || !_playerMovement.GetIsGrounded())
+        if (!canShoot || _offenseState != PlayerOffenseState.Neutral || _playerMovement.GetIsCrouched() || !_playerMovement.GetIsGrounded())
         {
             return;
         }
         _offenseState = PlayerOffenseState.Shooting;
         canShoot = false;
-        _isShooting = true;
+
+        // Change Player Rotation On Shot
+        Vector3 lookDir = _cameraTransform.forward;
+        lookDir.y = 0;
+
+        Quaternion targetRotation = Quaternion.LookRotation(lookDir);
+        transform.rotation = targetRotation;
+        _playerMovement.SetTargetRotation(targetRotation);
+
+        FireShot();
+
+        _offenseState = PlayerOffenseState.Neutral;
     }
 
-    private void HandleShootCooldowns()
-    {
-        if (canShoot)
-        {
-            return;
-        }
-
-        _shootCooldownTimer += Time.deltaTime;
-
-        if (_shootCooldownTimer >= _shootCooldown)
-        {
-            _shootCooldownTimer = 0;
-            canShoot = true;
-            _isShooting = false;
-        }
-    }
-
-    private void PerformShooting()
+    private void FireShot()
     {
         Vector3 SpawnPoint = transform.position + transform.forward * _shotPointForwardOffset + transform.up * _shotPointUpOffset + transform.right * _shotPointRightOffset;
         GameObject Shot = Instantiate(_shotPrefab, SpawnPoint, Quaternion.identity);
 
-        if (Shot.GetComponent<Rigidbody>() != null)
+        if (Shot.TryGetComponent(out Rigidbody rb))
         {
-            Shot.GetComponent<Rigidbody>().linearVelocity = transform.forward * _shootForce;
+            rb.linearVelocity = _cameraTransform.forward * _shootForce;
         }
         else
         {
             Debug.LogError("Shot Has No RigidBody");
         }
-        _offenseState = PlayerOffenseState.Neutral;
         // Play Shoot Animation
         // PLayer Shoot Sound
 

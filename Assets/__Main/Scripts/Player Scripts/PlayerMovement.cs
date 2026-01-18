@@ -191,6 +191,13 @@ public class PlayerMovement : MonoBehaviour
     {
         return movementState;
     }
+
+    //Setters
+    public void SetTargetRotation(Quaternion targetRotaion)
+    {
+        _targetRotation = targetRotaion;
+    }
+
     // Movement Logic
     private void moveAndRotate()
     {
@@ -236,9 +243,14 @@ public class PlayerMovement : MonoBehaviour
         if (_playerDirection != Vector3.zero) //on player movement
         {
             _targetRotation = Quaternion.LookRotation(_playerDirection); // makes the target rotation that we want the player to move to
-
+            
         }
         _theRigidBody.MoveRotation(Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeed * Time.deltaTime)); //Using lerp to smooth the player rotation using current rotation, target rotaion and rotation speed.
+
+    }
+
+    public void RotatePlayer(Quaternion TargetRotation)
+    {
 
     }
 
