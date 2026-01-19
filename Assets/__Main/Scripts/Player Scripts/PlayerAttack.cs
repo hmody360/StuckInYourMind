@@ -112,6 +112,7 @@ public class PlayerAttack : MonoBehaviour
         canAttack = false;
         _attackTimeLeft = _attackDuration;
         _armCollider.enabled = true;
+        _audioSources[0].PlayOneShot(_audioClips[0]);
         // Play Punch Animation
         // PLayer Punch Sound
     }
@@ -190,13 +191,13 @@ public class PlayerAttack : MonoBehaviour
             Debug.LogError("Shot Has No RigidBody");
         }
         // Play Shoot Animation
-        // PLayer Shoot Sound
+        _audioSources[1].PlayOneShot(_audioClips[1]);
 
     }
 
     private void OnDrawGizmos()
     {
-        //Shoot From Point
+        //Shoot From Point Gizmo
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position + transform.forward * _shotPointForwardOffset + transform.up * _shotPointUpOffset + transform.right * _shotPointRightOffset, 0.1f);
     }

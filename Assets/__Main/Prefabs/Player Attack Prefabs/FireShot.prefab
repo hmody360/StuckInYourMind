@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88dd3fee1145f4f44a3ecf7212031dc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShotImpact
-  shotPower: 1
+  shotDamage: 0
   shotTime: 1
 --- !u!198 &4794731903559652923
 ParticleSystem:
@@ -5271,7 +5271,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.92941177, g: 0.09411765, b: 0, a: 1}
+      maxColor: {r: 0.5849056, g: 0.00919657, b: 0.00919657, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -10107,7 +10107,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.9308176, g: 0.0940141, b: 0, a: 1}
+      maxColor: {r: 0.5849056, g: 0.00919657, b: 0.00919657, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}

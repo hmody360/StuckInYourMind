@@ -51,7 +51,6 @@ public class PlayerMovement : MonoBehaviour
 
     //Input States
     private Vector2 _moveInput;
-    private bool _JumpPressed;
     private bool _sprintHeld;
     private bool _crouchPressed;
     private bool _specialPressed;
@@ -112,19 +111,19 @@ public class PlayerMovement : MonoBehaviour
     private void OnEnable()
     {
         _input.OnMove += v => _moveInput = v;
-        _input.OnJump += () => _JumpPressed = true;
+        _input.OnJump += HandleJump;
         _input.OnSprint += held => _sprintHeld = held;
-        _input.OnCrouch += () => _crouchPressed = true ;
-        _input.OnSpecial += () => _specialPressed = true;
+        _input.OnCrouch += HandleCrouch;
+        _input.OnSpecial += HandleSA;
     }
 
     private void OnDisable()
     {
         _input.OnMove -= v => _moveInput = v;
-        _input.OnJump -= () => _JumpPressed = true;
+        _input.OnJump -= HandleJump;
         _input.OnSprint -= held => _sprintHeld = held;
-        _input.OnCrouch -= () => _crouchPressed = true;
-        _input.OnSpecial -= () => _specialPressed = true;
+        _input.OnCrouch -= HandleCrouch;
+        _input.OnSpecial -= HandleSA;
     }
 
     private void Update()
@@ -137,10 +136,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         CheckGround();
-        HandleJump();
         HandleSprint();
-        HandleCrouch();
-        HandleSA();
         HandleCooldowns();
         CheckBoredTimer();
 
@@ -269,7 +265,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void ResetFrameInput()
     {
-        _JumpPressed = false;
         _crouchPressed = false;
         _specialPressed = false;
     }
@@ -278,7 +273,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJump()
     {
-        if (!_JumpPressed || _isCrouched) return;
+        if (_isCrouched) return;
         // Allow Player to jump if on ground and jump button pressed.
         if (_isGrounded)
         {
@@ -341,10 +336,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleCrouch()
     {
-        if (!_crouchPressed)
-        {
-            return;
-        }
 
         //Crouch Code
         if (_isGrounded && !_isCrouched && !_isSprinting)
@@ -407,7 +398,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleSA()
     {
-        if (!_specialPressed || !_canUseSpecialAbility || _isCrouched)
+        if (!_canUseSpecialAbility || _isCrouched)
         {
             return;
         }
