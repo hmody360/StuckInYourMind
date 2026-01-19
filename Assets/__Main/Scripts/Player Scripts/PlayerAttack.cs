@@ -36,10 +36,11 @@ public class PlayerAttack : MonoBehaviour
     private PlayerInputHandler _input;
     private PlayerMovement _playerMovement;
     private Transform _cameraTransform;
+    private Animator _animator;
 
     private void Awake()
     {
-        //_animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
         _input = GetComponent<PlayerInputHandler>();
         _playerMovement = GetComponent<PlayerMovement>();
         _cameraTransform = Camera.main.transform;
@@ -113,8 +114,7 @@ public class PlayerAttack : MonoBehaviour
         _attackTimeLeft = _attackDuration;
         _armCollider.enabled = true;
         _audioSources[0].PlayOneShot(_audioClips[0]);
-        // Play Punch Animation
-        // PLayer Punch Sound
+        _animator.SetTrigger("PunchTrigger");
     }
 
     private void HandleCooldowns()
@@ -190,7 +190,7 @@ public class PlayerAttack : MonoBehaviour
         {
             Debug.LogError("Shot Has No RigidBody");
         }
-        // Play Shoot Animation
+        _animator.SetTrigger("ShootTrigger");
         _audioSources[1].PlayOneShot(_audioClips[1]);
 
     }

@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using static GameEnums;
 using static UnityEngine.Rendering.VirtualTexturing.Debugging;
@@ -23,6 +24,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Player Collider Size")]
     public float NormalHeight = 1f;
     public float crouchHeight = 0.6f;
+    public float NormalCenter = 0f;
+    public float crouchCenter = 0f;
 
     [Header("Ground Checking")]
     [SerializeField] private float _groundCheckerOffset = -0.9f;
@@ -42,12 +45,19 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private AudioSource[] _SFXSourceList;
     [SerializeField] private AudioClip[] _SFXClipList;
 
+    [Header("Player Cameras")]
+    [SerializeField] private CinemachineCamera _normalCamera;
+    [SerializeField] private CinemachineCamera _crouchCamera;
+
+    [Header("Testing")]
+    [SerializeField] bool _isCapsule = false;
+
     //Components
     private Rigidbody _theRigidBody;
     private Transform _cameraTransform;
     private CapsuleCollider _playerCollider;
     private PlayerInputHandler _input;
-    //private Animator _animator;
+    private Animator _animator;
 
     //Input States
     private Vector2 _moveInput;
@@ -89,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _theRigidBody = GetComponent<Rigidbody>(); //Getting Rigidbody from Player Object.
         _playerCollider = GetComponent<CapsuleCollider>();
-        //_animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
         _cameraTransform = Camera.main.transform;
         _input = GetComponent<PlayerInputHandler>();
     }
@@ -202,8 +212,8 @@ public class PlayerMovement : MonoBehaviour
         float Vertical = _moveInput.y; //Defining Char Z Axis using the new input system.
 
         _isWalking = _moveInput.sqrMagnitude > 0.01f && _isGrounded; //Check if player is walking to play walkingSFX
-        //_animator.SetBool("isWalking", _isWalking);
-        //_animator.SetBool("isGrounded", _isGrounded);
+        _animator.SetBool("isWalking", _isWalking);
+        _animator.SetBool("isGrounded", _isGrounded);
 
         if (_isWalking && !_SFXSourceList[0].isPlaying) //if player is walking and the walking audio source is not playing, play it.
         {
@@ -260,7 +270,7 @@ public class PlayerMovement : MonoBehaviour
         _theRigidBody.linearVelocity = Vector3.zero;
         UpdateTrails();
 
-        //_animator.SetBool("isDead", true); 
+        _animator.SetBool("isDead", true);
     }
 
     private void ResetFrameInput()
@@ -279,7 +289,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _theRigidBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             _canDoubleJump = true;
-            //_animator.SetTrigger("JumpTrigger");
+            _animator.SetTrigger("JumpTrigger");
             _SFXSourceList[1].PlayOneShot(_SFXClipList[3]);
         }
         // Allow Player to double jump if NOT on ground and jump button pressed.
@@ -287,7 +297,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _theRigidBody.AddForce(Vector3.up * doubleJumpForce, ForceMode.Impulse);
             _canDoubleJump = false;
-            //_animator.SetTrigger("JumpTrigger");
+            _animator.SetTrigger("JumpTrigger");
             _SFXSourceList[1].PlayOneShot(_SFXClipList[4]);
         }
 
@@ -315,7 +325,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             _SFXSourceList[0].clip = _SFXClipList[2];
-            //_animator.SetBool("isSprinting", _isSprinting);
+            _animator.SetBool("isSprinting", _isSprinting);
         }
         else if (currentStamina < maxStamina)
         {
@@ -326,7 +336,7 @@ public class PlayerMovement : MonoBehaviour
                 _canSprint = true;
             }
             _SFXSourceList[0].clip = _SFXClipList[0];
-            //_animator.SetBool("isSprinting", _isSprinting);
+            _animator.SetBool("isSprinting", _isSprinting);
         }
 
         UpdateTrails();
@@ -340,22 +350,40 @@ public class PlayerMovement : MonoBehaviour
         //Crouch Code
         if (_isGrounded && !_isCrouched && !_isSprinting)
         {
-            //_playerCollider.center = new Vector3(0f, 0.003449329f, 0f);
-            //_playerCollider.height = crouchHeight;
-            transform.localScale = new Vector3(1f, crouchHeight, 1f);
+            
+            if (_isCapsule)
+            {
+                transform.localScale = new Vector3(1f, crouchHeight, 1f);
+            }
+            else
+            {
+                _playerCollider.center = new Vector3(0f, crouchCenter, 0f);
+                _playerCollider.height = crouchHeight;
+            }
             _isCrouched = true;
-            //_animator.SetBool("isCrouched", _isCrouched);
+            _crouchCamera.Priority = 1;
+            _normalCamera.Priority = 0;
+            _animator.SetBool("isCrouched", _isCrouched);
             _SFXSourceList[0].clip = _SFXClipList[1];
 
             _SFXSourceList[2].PlayOneShot(_SFXClipList[5]);
         }
         else if (_isCrouched && _canUncrouch)
         {
-            transform.localScale = new Vector3(1f, NormalHeight, 1f);
-            //_playerCollider.center = new Vector3(0f, 0.005028358f, 0f);
-            //_playerCollider.height = NormalHeight;
+
+            if (_isCapsule)
+            {
+                transform.localScale = new Vector3(1f, NormalHeight, 1f);
+            }
+            else
+            {
+                _playerCollider.center = new Vector3(0f, NormalCenter, 0f);
+                _playerCollider.height = NormalHeight;
+            }
+            _normalCamera.Priority = 1;
+            _crouchCamera.Priority = 0;
             _isCrouched = false;
-            //_animator.SetBool("isCrouched", _isCrouched);
+            _animator.SetBool("isCrouched", _isCrouched);
             _currentSpeed = speed;
             _SFXSourceList[0].clip = _SFXClipList[0];
 
@@ -379,13 +407,13 @@ public class PlayerMovement : MonoBehaviour
         {
             _boredTimer = 0;
             _isBored = false;
-            //_animator.SetBool("isBored", _isBored);
+            _animator.SetBool("isBored", _isBored);
         }
 
         if(!_isBored && _boredTimer >= _timeTillBored)
         {
             _isBored = true;
-            //_animator.SetBool("isBored", _isBored);
+            _animator.SetBool("isBored", _isBored);
         }
     }
 
@@ -450,6 +478,7 @@ public class PlayerMovement : MonoBehaviour
         _saTimeLeft = _saDuration;
         _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
         UpdateTrails();
+        _animator.SetBool("isUsingSA", true);
     }
 
     private void PerformDash()
@@ -459,7 +488,7 @@ public class PlayerMovement : MonoBehaviour
             dashDirection.x * _saSpeed,
             _theRigidBody.linearVelocity.y,
             dashDirection.z * _saSpeed);
-
+        
         FinishSA();
 
         
@@ -498,8 +527,10 @@ public class PlayerMovement : MonoBehaviour
                 movementState = PlayerMovementState.Movement;
                 _theRigidBody.linearVelocity *= _saExitSpeed;
                 UpdateTrails();
+                _animator.SetBool("isUsingSA", false);
             }
-        }else if (type == CharacterType.Omar)
+        }
+        else if (type == CharacterType.Omar)
         {
             if (_isGrounded)
             {
