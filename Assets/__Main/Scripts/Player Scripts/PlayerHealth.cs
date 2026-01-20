@@ -54,7 +54,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (_pMovement != null)
         {
-            _pMovement.canMove = false;
+            //_pMovement.canMove = false;
             _damageAudioSource.PlayOneShot(_damageAudioClips[1]);
             Time.timeScale = 0f;
             //UIManger.instance.LoseScreen();

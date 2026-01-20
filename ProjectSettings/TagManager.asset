@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - ItemSlot
+  - Enemy
   layers:
   - Default
   - TransparentFX
