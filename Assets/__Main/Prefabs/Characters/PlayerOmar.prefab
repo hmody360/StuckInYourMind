@@ -748,6 +748,8 @@ MonoBehaviour:
   currentStamina: 20
   NormalHeight: 1
   crouchHeight: 0.6
+  NormalCenter: 0
+  crouchCenter: 0
   _groundCheckerOffset: -0.9
   _groundCheckerRadius: 0.3
   _groundLayer:
@@ -770,14 +772,17 @@ MonoBehaviour:
   - {fileID: 6692927156480385491}
   - {fileID: 1186046131981561153}
   _SFXClipList:
-  - {fileID: 8300000, guid: 1b139811871fff34e997465391353a64, type: 3}
-  - {fileID: 8300000, guid: f14907a052668654da7b103968f30687, type: 3}
+  - {fileID: 8300000, guid: c69537fc6cbb4194e90b7e860a072f0c, type: 3}
+  - {fileID: 8300000, guid: e3e6defe6ccf55144afaea3988d106c1, type: 3}
   - {fileID: 8300000, guid: 7e8eab6abfaa939489538f64a7c3f658, type: 3}
   - {fileID: 8300000, guid: 4268f2506b2f3e643a38c7042ee2d8a0, type: 3}
   - {fileID: 8300000, guid: cebddd8048d8bc146ad18c50ad1a41b8, type: 3}
   - {fileID: 8300000, guid: 7101bed989fe3fd448c4f8d37c198e73, type: 3}
   - {fileID: 8300000, guid: ec7f5756acbeda044ae95623babfb276, type: 3}
   - {fileID: 8300000, guid: 60151402bb71f1d4f862fe13ce4abf8b, type: 3}
+  _normalCamera: {fileID: 0}
+  _crouchCamera: {fileID: 0}
+  _isCapsule: 0
   _isGrounded: 0
   _isCrouched: 0
   _isWalking: 0

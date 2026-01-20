@@ -503,6 +503,7 @@ public class PlayerMovement : MonoBehaviour
         _saTimeLeft = _saDuration;
         _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
         UpdateTrails();
+        _animator.SetBool("isUsingSA", true);
     }
 
     private void PerformBash()
@@ -539,6 +540,7 @@ public class PlayerMovement : MonoBehaviour
                 _theRigidBody.linearVelocity *= _saExitSpeed;
                 UpdateTrails();
                 Instantiate(GroundImpactPrefab, (transform.position + Vector3.up * _groundImpactOffset), Quaternion.identity);
+                _animator.SetBool("isUsingSA", false);
             }
         }
     }
