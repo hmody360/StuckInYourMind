@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 public class PlayerInventory : MonoBehaviour
 {
-    //[SerializeField] private List<Item> itemlist = new List<Item>();
+    [SerializeField] private List<Collectible> itemlist = new List<Collectible>();
     [SerializeField] private AudioSource _inventoryAudioSource;
     [SerializeField] private AudioClip[] _inventoryAudioClips;
     private bool isOpen = false;
-    //private Animator _animator;
+    private Animator _animator;
 
     private void Awake()
     {
-        //_animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -32,7 +32,12 @@ public class PlayerInventory : MonoBehaviour
 
             isOpen = isOpen ? false : true;
         }
+    }
 
-        
+    public void AddCollectible(Collectible item)
+    {
+        itemlist.Add(item);
+        _animator.SetTrigger("PickupTrigger");
+        _inventoryAudioSource.PlayOneShot(_inventoryAudioClips[2]);
     }
 }

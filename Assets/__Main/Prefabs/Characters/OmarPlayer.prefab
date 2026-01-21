@@ -727,8 +727,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
   _inventoryAudioSource: {fileID: 0}
   _inventoryAudioClips:
-  - {fileID: 8300000, guid: d963fb175711d47429e01110725f1497, type: 3}
-  - {fileID: 8300000, guid: dc49c53fb49214741a0182e88327e293, type: 3}
+  - {fileID: 8300000, guid: 400a9c8dc14f4ef45ac41f2463b7d399, type: 3}
+  - {fileID: 8300000, guid: 8046deba84e151d48af27aeb31b01a12, type: 3}
+  - {fileID: 8300000, guid: 61884ee594d0e384a9c01b4c6ddd0ee4, type: 3}
 --- !u!114 &4021399069521622193
 MonoBehaviour:
   m_ObjectHideFlags: 0
