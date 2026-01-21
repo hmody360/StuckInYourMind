@@ -1,7 +1,6 @@
 using Unity.Cinemachine;
 using UnityEngine;
 using static GameEnums;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -413,6 +412,8 @@ public class PlayerMovement : MonoBehaviour
         if(!_isBored && _boredTimer >= _timeTillBored)
         {
             _isBored = true;
+            int RandomIdle = Random.Range(0, 3);
+            _animator.SetFloat("Bored_Idle", RandomIdle);
             _animator.SetBool("isBored", _isBored);
         }
     }

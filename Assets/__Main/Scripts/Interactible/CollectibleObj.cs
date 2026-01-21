@@ -4,8 +4,8 @@ public class CollectibleObj : MonoBehaviour
 {
     private Renderer _renderer;
     private Collider _collider;
-    private ParticleSystem _collectParticle;
-    private Collectible _item;
+    [SerializeField] private ParticleSystem _collectParticle;
+    [SerializeField] public Collectible _item;
 
 
     private void Awake()

@@ -3,11 +3,11 @@ using UnityEngine;
 [System.Serializable]
 public class Collectible
 {
-    private int _id;
-    private string _name;
-    private string _description;
-    private Sprite _icon;
-    private bool _isSecret;
+    [SerializeField] private int _id;
+    [SerializeField] private string _name;
+    [SerializeField] private string _description;
+    [SerializeField] private Sprite _icon;
+    [SerializeField] private bool _isSecret;
 
     public void setId(int id)
     {

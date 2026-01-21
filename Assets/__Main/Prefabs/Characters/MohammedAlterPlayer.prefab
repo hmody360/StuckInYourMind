@@ -3432,7 +3432,7 @@ GameObject:
   - component: {fileID: 8118979974814719751}
   m_Layer: 0
   m_Name: MohammedAlterPlayer
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3629,6 +3629,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6975312315ec6442997a718b97ef7b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
+  itemlist: []
   _inventoryAudioSource: {fileID: 3910757015820088831}
   _inventoryAudioClips:
   - {fileID: 8300000, guid: 400a9c8dc14f4ef45ac41f2463b7d399, type: 3}
