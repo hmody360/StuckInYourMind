@@ -856,6 +856,7 @@ GameObject:
   - component: {fileID: 378365810}
   - component: {fileID: 378365809}
   - component: {fileID: 378365808}
+  - component: {fileID: 378365811}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -955,6 +956,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 378365806}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &378365811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378365806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeb1bb15c28f60e4d824efc80a91bc4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
+  doorPivot: {fileID: 1686795483}
+  openAngle: -90
+  openSpeed: 2
+  test: 0
 --- !u!4 &460404020 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4962583346537170015, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
@@ -1160,7 +1177,7 @@ Transform:
   m_GameObject: {fileID: 614542169}
   serializedVersion: 2
   m_LocalRotation: {x: 0.1681546, y: -0.16815455, z: -0.68682176, w: 0.6868217}
-  m_LocalPosition: {x: 8.527603, y: 4.012603, z: -11.082652}
+  m_LocalPosition: {x: 8.527608, y: 52.36001, z: -11.082652}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2347,7 +2364,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3796156996745931082, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.0168495
+      value: 1.07
       objectReference: {fileID: 0}
     - target: {fileID: 3796156996745931082, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2388,6 +2405,10 @@ PrefabInstance:
     - target: {fileID: 7232218043214793168, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
       propertyPath: m_Name
       value: MohammedPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 7232218043214793168, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
+      propertyPath: m_TagString
+      value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2642,6 +2663,7 @@ GameObject:
   - component: {fileID: 1592717487}
   - component: {fileID: 1592717486}
   - component: {fileID: 1592717485}
+  - component: {fileID: 1592717488}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -2741,6 +2763,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1592717483}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1592717488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1592717483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeb1bb15c28f60e4d824efc80a91bc4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door
+  doorPivot: {fileID: 718319017}
+  openAngle: -90
+  openSpeed: 2
+  test: 0
 --- !u!1 &1686795482
 GameObject:
   m_ObjectHideFlags: 0
@@ -3729,11 +3767,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5621318447966314967, guid: 598bad9598de7d944bbd4d85ef24e3b8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.527601
+      value: 8.527608
       objectReference: {fileID: 0}
     - target: {fileID: 5621318447966314967, guid: 598bad9598de7d944bbd4d85ef24e3b8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.012603
+      value: 52.36001
       objectReference: {fileID: 0}
     - target: {fileID: 5621318447966314967, guid: 598bad9598de7d944bbd4d85ef24e3b8, type: 3}
       propertyPath: m_LocalPosition.z

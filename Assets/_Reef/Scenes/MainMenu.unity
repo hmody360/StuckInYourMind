@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 6abe918ee1229b34f8557fc2a5a39825, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 133347283e115d147a5fcce7f47a538f, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -947,6 +947,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 74853051006088332, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 701937004466155414, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1802193989060762578, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598939608994910635, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3796156996745931082, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
       propertyPath: m_LocalScale.x
       value: 40
@@ -1006,6 +1022,14 @@ PrefabInstance:
     - target: {fileID: 7232218043214793168, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
       propertyPath: m_Name
       value: MohammedPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 7851973333224507058, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7970235123863247318, guid: 8bb9f266be346ff4ab97fe350b6912c5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -1,48 +1,49 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.ProBuilder.Shapes;
+
 
 public class Door : MonoBehaviour
 {
-    public Transform doorPivot;   
+    public Transform doorPivot;
     public float openAngle = 90f;
     public float openSpeed = 2f;
-    public float interactDistance = 2f;
-
-    public bool canOpenDoor = false; //will be changed later
 
     private bool isOpen = false;
     private bool isMoving = false;
 
-    void Update()
+    private Quaternion closedRot;
+    private Quaternion openRot;
+    //for testing the code
+    public bool test; 
+
+    void Start()
     {
-        if (isMoving) return;
-        if (!canOpenDoor) return;   
-
-        if (Input.GetKeyDown(KeyCode.E) && PlayerInRange())
-        {
-            if (!isOpen)
-                StartCoroutine(RotateDoor(Quaternion.Euler(0, openAngle, 0)));
-            else
-                StartCoroutine(RotateDoor(Quaternion.Euler(0, 0, 0)));
-
-            isOpen = !isOpen;
-        }
+        closedRot = doorPivot.localRotation;
+        openRot = Quaternion.Euler(0, openAngle, 0) * closedRot;
     }
 
-    bool PlayerInRange()
+    public void OpenDoor()
     {
-        return Vector3.Distance(
-            Camera.main.transform.position,
-            doorPivot.position
-        ) <= interactDistance;
+        if (isOpen || isMoving) return;
+        StartCoroutine(RotateDoor(openRot));
+        isOpen = true;
     }
 
-    System.Collections.IEnumerator RotateDoor(Quaternion targetRot)
+    public void CloseDoor()
+    {
+        if (!isOpen || isMoving) return;
+        StartCoroutine(RotateDoor(closedRot));
+        isOpen = false;
+    }
+
+    IEnumerator RotateDoor(Quaternion targetRot)
     {
         isMoving = true;
         Quaternion startRot = doorPivot.localRotation;
 
-        float t = 0;
-        while (t < 1)
+        float t = 0f;
+        while (t < 1f)
         {
             t += Time.deltaTime * openSpeed;
             doorPivot.localRotation = Quaternion.Slerp(startRot, targetRot, t);
@@ -50,7 +51,30 @@ public class Door : MonoBehaviour
         }
 
         isMoving = false;
-    } 
+    }
 
-    //these is aunthor logic for the door
+    //for testing the code
+    private void Update()
+    {
+        if (test) OpenDoor();
+    }
+
+    //can be used in other sicrpts 
+
+    //public Door door; 
+
+    //void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.CompareTag("Player"))
+    //        door.OpenDoor();
+    //}
+
+    //void OnTriggerExit(Collider other)
+    //{
+    //    if (other.CompareTag("Player"))
+    //        door.CloseDoor();
+    //}
+
+
+
 }
