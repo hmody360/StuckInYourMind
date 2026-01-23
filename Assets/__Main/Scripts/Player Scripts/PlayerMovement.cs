@@ -1,6 +1,8 @@
 using Unity.Cinemachine;
 using UnityEngine;
+using System.Collections.Generic;
 using static GameEnums;
+using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -57,12 +59,11 @@ public class PlayerMovement : MonoBehaviour
     private CapsuleCollider _playerCollider;
     private PlayerInputHandler _input;
     private Animator _animator;
+    private SkinnedMeshRenderer[] _skinnedMeshRendererList;
 
     //Input States
     private Vector2 _moveInput;
     private bool _sprintHeld;
-    private bool _crouchPressed;
-    private bool _specialPressed;
 
     // Runtime Changing Values
 
@@ -99,8 +100,10 @@ public class PlayerMovement : MonoBehaviour
         _theRigidBody = GetComponent<Rigidbody>(); //Getting Rigidbody from Player Object.
         _playerCollider = GetComponent<CapsuleCollider>();
         _animator = GetComponent<Animator>();
+        _skinnedMeshRendererList = GetComponentsInChildren<SkinnedMeshRenderer>();
         _cameraTransform = Camera.main.transform;
         _input = GetComponent<PlayerInputHandler>();
+
     }
     void Start()
     {
@@ -140,7 +143,6 @@ public class PlayerMovement : MonoBehaviour
 
         if(movementState == PlayerMovementState.Disabled)
         {
-            ResetFrameInput();
             return;
         }
 
@@ -149,7 +151,6 @@ public class PlayerMovement : MonoBehaviour
         HandleCooldowns();
         CheckBoredTimer();
 
-        ResetFrameInput();
 
     }
 
@@ -250,7 +251,7 @@ public class PlayerMovement : MonoBehaviour
             _targetRotation = Quaternion.LookRotation(_playerDirection); // makes the target rotation that we want the player to move to
             
         }
-        _theRigidBody.MoveRotation(Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeed * Time.deltaTime)); //Using lerp to smooth the player rotation using current rotation, target rotaion and rotation speed.
+        _theRigidBody.MoveRotation(Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeed * Time.fixedDeltaTime)); //Using lerp to smooth the player rotation using current rotation, target rotaion and rotation speed.
 
     }
 
@@ -270,12 +271,6 @@ public class PlayerMovement : MonoBehaviour
         UpdateTrails();
 
         _animator.SetBool("isDead", true);
-    }
-
-    private void ResetFrameInput()
-    {
-        _crouchPressed = false;
-        _specialPressed = false;
     }
 
     // Jump Logic =======================================================================
@@ -362,9 +357,9 @@ public class PlayerMovement : MonoBehaviour
             _isCrouched = true;
             _crouchCamera.Priority = 1;
             _normalCamera.Priority = 0;
+            DeactivateMesh();
             _animator.SetBool("isCrouched", _isCrouched);
             _SFXSourceList[0].clip = _SFXClipList[1];
-
             _SFXSourceList[2].PlayOneShot(_SFXClipList[5]);
         }
         else if (_isCrouched && _canUncrouch)
@@ -379,9 +374,10 @@ public class PlayerMovement : MonoBehaviour
                 _playerCollider.center = new Vector3(0f, NormalCenter, 0f);
                 _playerCollider.height = NormalHeight;
             }
+            _isCrouched = false;
             _normalCamera.Priority = 1;
             _crouchCamera.Priority = 0;
-            _isCrouched = false;
+            ActivateMesh();
             _animator.SetBool("isCrouched", _isCrouched);
             _currentSpeed = speed;
             _SFXSourceList[0].clip = _SFXClipList[0];
@@ -546,11 +542,28 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //Helper Code
+
     private void CheckGround()
     {
         _isGrounded = Physics.CheckSphere(transform.position + Vector3.up * _groundCheckerOffset, _groundCheckerRadius, _groundLayer); //Checking if player is on ground.
     }
 
+    private void DeactivateMesh()
+    {
+        foreach (SkinnedMeshRenderer mesh in _skinnedMeshRendererList)
+        {
+            mesh.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+        }
+    }
+
+    private void ActivateMesh()
+    {
+        foreach (SkinnedMeshRenderer mesh in _skinnedMeshRendererList)
+        {
+            mesh.shadowCastingMode = ShadowCastingMode.On;
+        }
+    }
     // Gizmos =======================================================================
     private void OnDrawGizmos() //Gizmo to draw the ground checker sphere.
     {

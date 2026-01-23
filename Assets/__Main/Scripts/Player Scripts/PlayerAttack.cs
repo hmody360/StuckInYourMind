@@ -181,6 +181,7 @@ public class PlayerAttack : MonoBehaviour
     {
         Vector3 SpawnPoint = transform.position + transform.forward * _shotPointForwardOffset + transform.up * _shotPointUpOffset + transform.right * _shotPointRightOffset;
         GameObject Shot = Instantiate(_shotPrefab, SpawnPoint, Quaternion.identity);
+        Shot.GetComponent<ShotImpact>().shotDamage = _shootDamage;
 
         if (Shot.TryGetComponent(out Rigidbody rb))
         {
