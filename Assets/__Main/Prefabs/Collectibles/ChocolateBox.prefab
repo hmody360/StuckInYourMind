@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 5416025346812226469}
   serializedVersion: 2
   m_LocalRotation: {x: 0.08682413, y: -0.0075961305, z: 0.08682413, w: 0.99240386}
-  m_LocalPosition: {x: -7.11, y: 1.365, z: 2.38}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -169,7 +169,8 @@ MonoBehaviour:
     _description: I gave this to Mohammed way back when we started going out, it
       was my payback for the gift he had given me before...
     _icon: {fileID: 21300000, guid: 805a36840d1aa124fbaeb3cb223ab957, type: 3}
-    _isSecret: 0
+    _type: 0
+  _fadeOutSpeed: 2
 --- !u!1001 &4685314320238841142
 PrefabInstance:
   m_ObjectHideFlags: 0

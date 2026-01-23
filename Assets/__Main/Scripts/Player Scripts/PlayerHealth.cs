@@ -3,8 +3,12 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
-    public float maxHealth;
-    public float currentHealth;
+    [SerializeField] private float maxHealth = 3;
+    [SerializeField] private float currentHealth;
+    [SerializeField] private float maxLives = 99f;
+    [SerializeField] private float currentLives;
+    [SerializeField] private bool _isInvincible = false;
+
 
     private PlayerMovement _pMovement;
 
@@ -24,10 +28,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     }
 
 
-    public void takeDamage(float damage) //Take Damage from Enemy and Bad Health Vials.
+    public void takeDamage(float damage) //Take Damage from Enemy.
     {
         currentHealth -= damage;
-        _damageAudioSource.PlayOneShot(_damageAudioClips[0]);
+        _damageAudioSource.PlayOneShot(_damageAudioClips[1]);
 
         if (currentHealth <= 0)
         {
@@ -38,9 +42,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
     }
 
-    public void heal(float healAmount) //Heal when taking a good Health Vial.
+    public void AddHealthPoint() //Heal when taking a Heart.
     {
-        currentHealth += healAmount;
+        currentHealth++;
         _damageAudioSource.PlayOneShot(_damageAudioClips[2]);
         if (currentHealth > maxHealth)
         {
@@ -50,14 +54,35 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
     }
 
+    public void AddLifePoint()
+    {
+        currentLives++;
+        _damageAudioSource.PlayOneShot(_damageAudioClips[3]);
+    }
+
+    private void RemoveLifePoint()
+    {
+        currentLives--;
+        _damageAudioSource.PlayOneShot(_damageAudioClips[4]);
+    }
+
     public void onDeath() //On PLayer's death disable movement of all kind, and show lose screen.
     {
         if (_pMovement != null)
         {
-            //_pMovement.canMove = false;
-            _damageAudioSource.PlayOneShot(_damageAudioClips[1]);
-            Time.timeScale = 0f;
-            //UIManger.instance.LoseScreen();
+            if(currentLives <= 0)
+            {
+                //_pMovement.canMove = false;
+                _damageAudioSource.PlayOneShot(_damageAudioClips[0]);
+                Time.timeScale = 0f;
+                //UIManger.instance.LoseScreen();
+            }
+            else
+            {
+                RemoveLifePoint();
+                // Update Lives in UI & Show Lives UI for a bit then disapper
+            }
+
         }
     }
 
@@ -69,6 +94,26 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         {
             Destroy(enemy);
         }
+    }
+
+    public float getMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    public float getCurrentHealth()
+    {
+        return currentHealth;
+    }
+
+    public float getMaxLives()
+    {
+        return maxLives;
+    }
+
+    public float getCurrentLives()
+    {
+        return maxHealth;
     }
 
 

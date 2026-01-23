@@ -1,37 +1,40 @@
 using UnityEngine;
+using static GameEnums;
 
 [System.Serializable]
 public class Collectible
 {
     [SerializeField] private int _id;
     [SerializeField] private string _name;
+
+    [TextArea(3,6)]
     [SerializeField] private string _description;
     [SerializeField] private Sprite _icon;
-    [SerializeField] private bool _isSecret;
+    [SerializeField] private CollectibleType _type;
 
-    public void setId(int id)
+    public void SetId(int id)
     {
         _id = id;
     }
 
-    public void setName(string name)
+    public void SetName(string name)
     {
         _name = name;
     }
 
-    public void setDescription(string description)
+    public void SetDescription(string description)
     {
         _description = description;
     }
 
-    public void setIcon(Sprite icon)
+    public void SetIcon(Sprite icon)
     {
         _icon = icon;
     }
 
-    private void ToggleSecret()
+    public void SetType(CollectibleType type)
     {
-        _isSecret = !_isSecret;
+        _type = type;
     }
 
     public int getId()
@@ -54,8 +57,8 @@ public class Collectible
         return _icon;
     }
 
-    public bool getIsSecret()
+    public CollectibleType getType()
     {
-        return _isSecret;
+        return _type;
     }
 }
