@@ -572,7 +572,7 @@ GameObject:
   - component: {fileID: 2826921722022427762}
   m_Layer: 0
   m_Name: RingOfFriendship
-  m_TagString: RingOfFriendship
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3879,6 +3879,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 400a9c8dc14f4ef45ac41f2463b7d399, type: 3}
   - {fileID: 8300000, guid: 8046deba84e151d48af27aeb31b01a12, type: 3}
   - {fileID: 8300000, guid: 61884ee594d0e384a9c01b4c6ddd0ee4, type: 3}
+  _WearbleObject: {fileID: 1550895458374012767}
 --- !u!114 &7997533371801740006
 MonoBehaviour:
   m_ObjectHideFlags: 0

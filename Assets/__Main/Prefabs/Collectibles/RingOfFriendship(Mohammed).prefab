@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5261151772324458922}
   - component: {fileID: 5470156370983700664}
   m_Layer: 0
-  m_Name: RingOfFriendship
+  m_Name: RingOfFriendship(Mohammed)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,8 +57,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.22493982, y: 0.18179819, z: 0.28388357}
-  m_Center: {x: -0.02239108, y: 0.07759003, z: 0.0015387535}
+  m_Size: {x: 0.22493982, y: 0.18179819, z: 0.26811486}
+  m_Center: {x: -0.02239108, y: 0.07759003, z: -0.014067713}
 --- !u!114 &5261151772324458922
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,11 +92,12 @@ MonoBehaviour:
   _collectParticle: {fileID: 21274363048675398}
   _item:
     _id: 6
-    _name: Ring Of Friendship
-    _description: 'This is the ultimate proof of our friendship, and how strong it
-      is...I should wear it! '
+    _name: Mohammed's Ring Of Friendship
+    _description: This is the ring I gave to Mohammed...it's a sign of our strong
+      friendship...I should hold onto it.
     _icon: {fileID: 21300000, guid: 23681d7089ba07c4ab8a8f6ef32e6afd, type: 3}
     _type: 0
+    isWearable: 1
   _fadeOutSpeed: 1
 --- !u!1 &5767283154629104133
 GameObject:

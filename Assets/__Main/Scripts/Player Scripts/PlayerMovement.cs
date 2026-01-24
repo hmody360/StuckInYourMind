@@ -110,6 +110,7 @@ public class PlayerMovement : MonoBehaviour
 
         _targetRotation = transform.rotation;
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         _theRigidBody.freezeRotation = true; //This is to stop other game objects from affecting the player's rotation
         _currentSpeed = speed;
         currentStamina = maxStamina;
@@ -269,8 +270,12 @@ public class PlayerMovement : MonoBehaviour
 
         _theRigidBody.linearVelocity = Vector3.zero;
         UpdateTrails();
+    }
 
-        _animator.SetBool("isDead", true);
+    public void EnableMovement()
+    {
+        movementState = PlayerMovementState.Movement;
+        _canUseSpecialAbility = true;
     }
 
     // Jump Logic =======================================================================

@@ -30,6 +30,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void takeDamage(float damage) //Take Damage from Enemy.
     {
+        if (_isInvincible)
+        {
+            return;
+        }
+
         currentHealth -= damage;
         _damageAudioSource.PlayOneShot(_damageAudioClips[1]);
 
@@ -42,22 +47,40 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
     }
 
-    public void AddHealthPoint() //Heal when taking a Heart.
+    public bool AddHealthPoint() //Heal when taking a Heart.
     {
-        currentHealth++;
-        _damageAudioSource.PlayOneShot(_damageAudioClips[2]);
-        if (currentHealth > maxHealth)
+        if(currentHealth >= maxHealth)
         {
-            currentHealth = maxHealth;
+            return false;
+        }
+        else
+        {
+            currentHealth++;
+            _damageAudioSource.PlayOneShot(_damageAudioClips[2]);
+            if (currentHealth > maxHealth)
+            {
+                currentHealth = maxHealth;
+            }
+            //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
+            return true;
         }
 
-        //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
     }
 
-    public void AddLifePoint()
+    public bool AddLifePoint()
     {
-        currentLives++;
-        _damageAudioSource.PlayOneShot(_damageAudioClips[3]);
+        if(currentLives <= maxLives)
+        {
+            return false;
+        }
+        else
+        {
+            currentLives++;
+            _damageAudioSource.PlayOneShot(_damageAudioClips[3]);
+            return true;
+
+        }
+            
     }
 
     private void RemoveLifePoint()
@@ -72,7 +95,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         {
             if(currentLives <= 0)
             {
-                //_pMovement.canMove = false;
+                _pMovement.DisableMovement();
                 _damageAudioSource.PlayOneShot(_damageAudioClips[0]);
                 Time.timeScale = 0f;
                 //UIManger.instance.LoseScreen();

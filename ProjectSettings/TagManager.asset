@@ -6,7 +6,6 @@ TagManager:
   tags:
   - ItemSlot
   - Enemy
-  - RingOfFriendship
   layers:
   - Default
   - TransparentFX

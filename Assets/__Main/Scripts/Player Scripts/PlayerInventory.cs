@@ -7,6 +7,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private List<Collectible> itemlist = new List<Collectible>();
     [SerializeField] private AudioSource _inventoryAudioSource;
     [SerializeField] private AudioClip[] _inventoryAudioClips;
+    [SerializeField] private GameObject _WearbleObject;
     private bool isOpen = false;
     private Animator _animator;
 
@@ -19,15 +20,19 @@ public class PlayerInventory : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E)) //Open/Close Inventory UI and play the respective sound
         {
-            //UIManger.instance.ToggleCollectibles();
+            GameUIManager.instance.ToggleInventoryPanel();
 
             if (isOpen)
             {
                 _inventoryAudioSource.PlayOneShot(_inventoryAudioClips[0]);
+                GameUIManager.instance.UpdateBackpackTipText("Open Backpack (E)");
+                GameManager.instance.ResumeGame();
             }
             else
             {
                 _inventoryAudioSource.PlayOneShot(_inventoryAudioClips[1]);
+                GameUIManager.instance.UpdateBackpackTipText("Close Backpack (E)");
+                GameManager.instance.PauseGame();
             }
 
             isOpen = isOpen ? false : true;
@@ -39,5 +44,18 @@ public class PlayerInventory : MonoBehaviour
         itemlist.Add(item);
         _animator.SetTrigger("PickupTrigger");
         _inventoryAudioSource.PlayOneShot(_inventoryAudioClips[2]);
+
+        if (item.getIsWearble())
+        {
+            if(_WearbleObject != null)
+            {
+                _WearbleObject.SetActive(true);
+            }
+            else
+            {
+                Debug.LogWarning("Wearble Not assigned");
+            }
+            
+        }
     }
 }

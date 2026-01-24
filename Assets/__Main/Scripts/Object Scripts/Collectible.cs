@@ -7,10 +7,11 @@ public class Collectible
     [SerializeField] private int _id;
     [SerializeField] private string _name;
 
-    [TextArea(3,6)]
+    [TextArea(3, 6)]
     [SerializeField] private string _description;
     [SerializeField] private Sprite _icon;
     [SerializeField] private CollectibleType _type;
+    [SerializeField] private bool isWearable;
 
     public void SetId(int id)
     {
@@ -60,5 +61,10 @@ public class Collectible
     public CollectibleType getType()
     {
         return _type;
+    }
+
+    public bool getIsWearble()
+    {
+        return isWearable;
     }
 }

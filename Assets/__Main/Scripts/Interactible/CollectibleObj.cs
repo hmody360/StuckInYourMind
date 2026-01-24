@@ -31,33 +31,43 @@ public class CollectibleObj : MonoBehaviour
     {
         if (_collider != null && other.CompareTag("Player"))
         {
-            FadeOut();
-            _collider.enabled = false;
-            _collectParticle.Play();
-            Destroy(gameObject, 1f);
-
+            
             switch (_item.getType())
             {
                 case CollectibleType.NormalCollectible:
                     _playerInventory.AddCollectible(_item);
-                    // Add To Normal Item Spot in UI
+                    GameUIManager.instance.AddItem(_item);
+                    DestroyCollectible();
                     break;
                 case CollectibleType.SecretCollectible:
                     _playerInventory.AddCollectible(_item);
-                    // Add To Secret Item Spot in UI
+                    GameUIManager.instance.AddItem(_item);
+                    DestroyCollectible();
                     break;
                 case CollectibleType.HealthPoint:
-                    _playerHealth.AddHealthPoint();
+                    bool canAddHealth = _playerHealth.AddHealthPoint();
+                    if (canAddHealth)
+                        DestroyCollectible();
                     // Update Health UI
                     break;
                 case CollectibleType.LifePoint:
-                    _playerHealth.AddLifePoint();
+                    bool canAddLife = _playerHealth.AddLifePoint();
+                    if (canAddLife)
+                        DestroyCollectible();
                     // Update Lives in UI & Show Lives UI for a bit then disapper
                     break;
 
 
             }
         }
+    }
+
+    private void DestroyCollectible()
+    {
+        FadeOut();
+        _collider.enabled = false;
+        _collectParticle.Play();
+        Destroy(gameObject, 1f);
     }
 
     private void FadeOut()
