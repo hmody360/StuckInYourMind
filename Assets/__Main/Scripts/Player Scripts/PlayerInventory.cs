@@ -10,33 +10,47 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private GameObject _WearbleObject;
     private bool isOpen = false;
     private Animator _animator;
+    private PlayerInputHandler _input;
+    private PlayerMovement _pMovement;
+    private PlayerHealth _pHealth;
 
     private void Awake()
     {
         _animator = GetComponent<Animator>();
+        _input = GetComponent<PlayerInputHandler>();
+        _pMovement = GetComponent<PlayerMovement>();
+        _pHealth = GetComponent<PlayerHealth>();
     }
 
-    private void Update()
+
+    private void OnEnable()
     {
-        if (Input.GetKeyDown(KeyCode.E)) //Open/Close Inventory UI and play the respective sound
+        _input.OnInventory += ToggleInventory;
+    }
+
+    private void OnDisable()
+    {
+        _input.OnInventory -= ToggleInventory;
+    }
+
+    public void ToggleInventory()
+    {
+        GameUIManager.instance.ToggleInventoryPanel();
+
+        if (isOpen)
         {
-            GameUIManager.instance.ToggleInventoryPanel();
-
-            if (isOpen)
-            {
-                _inventoryAudioSource.PlayOneShot(_inventoryAudioClips[0]);
-                GameUIManager.instance.UpdateBackpackTipText("Open Backpack (E)");
-                GameManager.instance.ResumeGame();
-            }
-            else
-            {
-                _inventoryAudioSource.PlayOneShot(_inventoryAudioClips[1]);
-                GameUIManager.instance.UpdateBackpackTipText("Close Backpack (E)");
-                GameManager.instance.PauseGame();
-            }
-
-            isOpen = isOpen ? false : true;
+            _inventoryAudioSource.PlayOneShot(_inventoryAudioClips[0]);
+            GameUIManager.instance.UpdateBackpackTipText("Open Backpack (E)");
+            GameManager.instance.ResumeGame();
         }
+        else
+        {
+            _inventoryAudioSource.PlayOneShot(_inventoryAudioClips[1]);
+            GameUIManager.instance.UpdateBackpackTipText("Close Backpack (E)");
+            GameManager.instance.PauseGame();
+        }
+
+        isOpen = isOpen ? false : true;
     }
 
     public void AddCollectible(Collectible item)
@@ -50,6 +64,15 @@ public class PlayerInventory : MonoBehaviour
             if(_WearbleObject != null)
             {
                 _WearbleObject.SetActive(true);
+                if(_pMovement != null && _pHealth != null)
+                {
+                    _pMovement.UpdateRendererList();
+                    _pHealth.UpdateRendererList();
+                }
+                else
+                {
+                    Debug.LogWarning("Player movement or player health is null");
+                }
             }
             else
             {

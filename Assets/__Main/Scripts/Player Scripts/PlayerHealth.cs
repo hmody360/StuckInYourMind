@@ -12,12 +12,13 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] private float _invincibilityTime = 0;
     [SerializeField] private bool _isInvincible = false;
     [SerializeField] private Transform _currentCheckPoint;
+    [SerializeField] private GameObject _respawnEffect;
 
 
     private PlayerMovement _pMovement;
     private PlayerAttack _pAttack;
     private Animator _pAnimator;
-    private SkinnedMeshRenderer[] _skinnedMeshRendererList;
+    private Renderer[] _skinnedMeshRendererList;
 
     [SerializeField] private AudioSource _damageAudioSource;
     [SerializeField] private AudioClip[] _damageAudioClips;
@@ -28,7 +29,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         _pMovement = GetComponent<PlayerMovement>();
         _pAttack = GetComponent<PlayerAttack>();
         _pAnimator = GetComponent<Animator>();
-        _skinnedMeshRendererList = GetComponentsInChildren<SkinnedMeshRenderer>();
+        _skinnedMeshRendererList = GetComponentsInChildren<Renderer>();
     }
 
     private void Start() // Set Player Health and update UI
@@ -85,7 +86,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public bool AddLifePoint()
     {
-        if (_currentLives <= _maxLives)
+        if (_currentLives >= _maxLives)
         {
             return false;
         }
@@ -158,13 +159,23 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         _currentHealth = _maxHealth;
         _isInvincible = false;
-        if (_currentCheckPoint != null)
+        if (_currentCheckPoint != null && _respawnEffect != null)
         {
             transform.localPosition = _currentCheckPoint.position;
             _pAnimator.SetTrigger("RespawnTrigger");
+            _respawnEffect.SetActive(true);
+        }
+        else
+        {
+            Debug.Log("Respawn point or respawn effect are null");
         }
 
 
+    }
+
+    public void UpdateRendererList()
+    {
+        _skinnedMeshRendererList = GetComponentsInChildren<Renderer>();
     }
 
     private IEnumerator DamageTimer()
@@ -178,15 +189,21 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         while (_isInvincible)
         {
-            foreach(SkinnedMeshRenderer smr in _skinnedMeshRendererList)
+            foreach (Renderer smr in _skinnedMeshRendererList)
             {
                 smr.enabled = false;
-                yield return new WaitForSeconds(.1f);
-                smr.enabled = true;
-                yield return new WaitForSeconds(.1f);
             }
+
+            yield return new WaitForSeconds(.1f);
+            foreach (Renderer smr in _skinnedMeshRendererList)
+            {
+                smr.enabled = true;
+            }
+            yield return new WaitForSeconds(.1f);
         }
     }
+
+
 
     private IEnumerator DeathSequence()
     {

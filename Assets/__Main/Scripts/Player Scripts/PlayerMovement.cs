@@ -59,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
     private CapsuleCollider _playerCollider;
     private PlayerInputHandler _input;
     private Animator _animator;
-    private SkinnedMeshRenderer[] _skinnedMeshRendererList;
+    private Renderer[] _skinnedMeshRendererList;
 
     //Input States
     private Vector2 _moveInput;
@@ -557,7 +557,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void DeactivateMesh()
     {
-        foreach (SkinnedMeshRenderer mesh in _skinnedMeshRendererList)
+        foreach (Renderer mesh in _skinnedMeshRendererList)
         {
             mesh.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
         }
@@ -565,10 +565,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void ActivateMesh()
     {
-        foreach (SkinnedMeshRenderer mesh in _skinnedMeshRendererList)
+        foreach (Renderer mesh in _skinnedMeshRendererList)
         {
             mesh.shadowCastingMode = ShadowCastingMode.On;
         }
+    }
+
+    public void UpdateRendererList()
+    {
+        _skinnedMeshRendererList = GetComponentsInChildren<Renderer>();
     }
     // Gizmos =======================================================================
     private void OnDrawGizmos() //Gizmo to draw the ground checker sphere.
