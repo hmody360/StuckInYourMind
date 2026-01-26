@@ -1,16 +1,23 @@
+using System.Collections;
+using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
-    [SerializeField] private float maxHealth = 3;
-    [SerializeField] private float currentHealth;
-    [SerializeField] private float maxLives = 99f;
-    [SerializeField] private float currentLives;
+    [SerializeField] private float _maxHealth = 3;
+    [SerializeField] private float _currentHealth;
+    [SerializeField] private float _maxLives = 99f;
+    [SerializeField] private float _currentLives;
+    [SerializeField] private float _invincibilityTime = 0;
     [SerializeField] private bool _isInvincible = false;
+    [SerializeField] private Transform _currentCheckPoint;
 
 
     private PlayerMovement _pMovement;
+    private PlayerAttack _pAttack;
+    private Animator _pAnimator;
+    private SkinnedMeshRenderer[] _skinnedMeshRendererList;
 
     [SerializeField] private AudioSource _damageAudioSource;
     [SerializeField] private AudioClip[] _damageAudioClips;
@@ -19,11 +26,15 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private void Awake()
     {
         _pMovement = GetComponent<PlayerMovement>();
+        _pAttack = GetComponent<PlayerAttack>();
+        _pAnimator = GetComponent<Animator>();
+        _skinnedMeshRendererList = GetComponentsInChildren<SkinnedMeshRenderer>();
     }
 
     private void Start() // Set Player Health and update UI
     {
-        currentHealth = maxHealth;
+        _currentHealth = _maxHealth;
+        _currentLives = 3;
         //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
     }
 
@@ -35,13 +46,18 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             return;
         }
 
-        currentHealth -= damage;
-        _damageAudioSource.PlayOneShot(_damageAudioClips[1]);
+        _currentHealth -= damage;
+        _damageAudioSource.PlayOneShot(_damageAudioClips[0]);
 
-        if (currentHealth <= 0)
+        if (_currentHealth <= 0)
         {
             onDeath();
-            currentHealth = 0;
+        }
+        else
+        {
+            _pAnimator.SetTrigger("DamageTrigger");
+            StartCoroutine(DamageTimer());
+            StartCoroutine(InvincibleEffect());
         }
 
         //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
@@ -49,17 +65,17 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public bool AddHealthPoint() //Heal when taking a Heart.
     {
-        if(currentHealth >= maxHealth)
+        if (_currentHealth >= _maxHealth)
         {
             return false;
         }
         else
         {
-            currentHealth++;
-            _damageAudioSource.PlayOneShot(_damageAudioClips[2]);
-            if (currentHealth > maxHealth)
+            _currentHealth++;
+            _damageAudioSource.PlayOneShot(_damageAudioClips[1]);
+            if (_currentHealth > _maxHealth)
             {
-                currentHealth = maxHealth;
+                _currentHealth = _maxHealth;
             }
             //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
             return true;
@@ -69,40 +85,39 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public bool AddLifePoint()
     {
-        if(currentLives <= maxLives)
+        if (_currentLives <= _maxLives)
         {
             return false;
         }
         else
         {
-            currentLives++;
-            _damageAudioSource.PlayOneShot(_damageAudioClips[3]);
+            _currentLives++;
+            _damageAudioSource.PlayOneShot(_damageAudioClips[2]);
             return true;
 
         }
-            
+
     }
 
     private void RemoveLifePoint()
     {
-        currentLives--;
-        _damageAudioSource.PlayOneShot(_damageAudioClips[4]);
+        _currentLives--;
+        _damageAudioSource.PlayOneShot(_damageAudioClips[3]);
     }
 
     public void onDeath() //On PLayer's death disable movement of all kind, and show lose screen.
     {
         if (_pMovement != null)
         {
-            if(currentLives <= 0)
+            if (_currentLives <= 0)
             {
-                _pMovement.DisableMovement();
-                _damageAudioSource.PlayOneShot(_damageAudioClips[0]);
-                Time.timeScale = 0f;
-                //UIManger.instance.LoseScreen();
+                StartCoroutine(DeathSequence());
+                _currentHealth = 0;
             }
             else
             {
                 RemoveLifePoint();
+                Respawn();
                 // Update Lives in UI & Show Lives UI for a bit then disapper
             }
 
@@ -121,23 +136,68 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public float getMaxHealth()
     {
-        return maxHealth;
+        return _maxHealth;
     }
 
     public float getCurrentHealth()
     {
-        return currentHealth;
+        return _currentHealth;
     }
 
     public float getMaxLives()
     {
-        return maxLives;
+        return _maxLives;
     }
 
     public float getCurrentLives()
     {
-        return maxHealth;
+        return _maxHealth;
     }
 
+    private void Respawn()
+    {
+        _currentHealth = _maxHealth;
+        _isInvincible = false;
+        if (_currentCheckPoint != null)
+        {
+            transform.localPosition = _currentCheckPoint.position;
+            _pAnimator.SetTrigger("RespawnTrigger");
+        }
 
+
+    }
+
+    private IEnumerator DamageTimer()
+    {
+        _isInvincible = true;
+        yield return new WaitForSeconds(_invincibilityTime);
+        _isInvincible = false;
+    }
+
+    private IEnumerator InvincibleEffect()
+    {
+        while (_isInvincible)
+        {
+            foreach(SkinnedMeshRenderer smr in _skinnedMeshRendererList)
+            {
+                smr.enabled = false;
+                yield return new WaitForSeconds(.1f);
+                smr.enabled = true;
+                yield return new WaitForSeconds(.1f);
+            }
+        }
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        _pMovement.DisableMovement();
+        _pAttack.DisableOffense();
+        _damageAudioSource.PlayOneShot(_damageAudioClips[4]);
+        _pAnimator.SetBool("isDead", true);
+        yield return new WaitForSeconds(3f);
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        //UIManger.instance.LoseScreen();
+    }
 }

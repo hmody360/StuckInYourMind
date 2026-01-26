@@ -32,7 +32,6 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private AudioClip[] _audioClips;
 
     //Components
-    //private Animator _animator;
     private PlayerInputHandler _input;
     private PlayerMovement _playerMovement;
     private Transform _cameraTransform;

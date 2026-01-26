@@ -93,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
     private Quaternion _targetRotation;
     private Vector3 _playerDirection;
 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created.
 
     private void Awake()

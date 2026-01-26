@@ -3892,13 +3892,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f28e0c77bd1a9ba40b0bf7226fb503b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHealth: 10
-  currentHealth: 0
-  maxLives: 99
-  currentLives: 0
+  _maxHealth: 3
+  _currentHealth: 0
+  _maxLives: 99
+  _currentLives: 0
+  _invincibilityTime: 4
   _isInvincible: 0
   _damageAudioSource: {fileID: 2173855203034093498}
-  _damageAudioClips: []
+  _damageAudioClips:
+  - {fileID: 8300000, guid: e9701ea943759204bac623a94151a215, type: 3}
+  - {fileID: 8300000, guid: c36b50c300e64eb45a04d4b41d33b30f, type: 3}
+  - {fileID: 8300000, guid: 276ffccf5831bc046b7773639e866de1, type: 3}
+  - {fileID: 8300000, guid: f55836a4e13c1564a9947ac6450ab2ce, type: 3}
+  - {fileID: 8300000, guid: bb91822d57eb07446816b3df365ef337, type: 3}
 --- !u!114 &3006200507309425341
 MonoBehaviour:
   m_ObjectHideFlags: 0
