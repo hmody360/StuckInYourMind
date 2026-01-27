@@ -116,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
         _currentSpeed = speed;
         currentStamina = maxStamina;
 
-        //GameUIManager.instance.SetEnergyFill(currentStamina, maxStamina);
+        GameUIManager.instance.UpdateStamina(currentStamina, maxStamina);
     }
 
 
@@ -319,9 +319,11 @@ public class PlayerMovement : MonoBehaviour
                 currentStamina = 0;
                 _canSprint = false;
                 _SFXSourceList[3].PlayOneShot(_SFXClipList[7]);
+                GameUIManager.instance.UpdateStaminaColor(true);
             }
 
             _SFXSourceList[0].clip = _SFXClipList[2];
+            GameUIManager.instance.UpdateStamina(currentStamina, maxStamina);
             _animator.SetBool("isSprinting", _isSprinting);
         }
         else if (currentStamina < maxStamina)
@@ -331,8 +333,10 @@ public class PlayerMovement : MonoBehaviour
             {
                 currentStamina = maxStamina;
                 _canSprint = true;
+                GameUIManager.instance.UpdateStaminaColor(false);
             }
             _SFXSourceList[0].clip = _SFXClipList[0];
+            GameUIManager.instance.UpdateStamina(currentStamina, maxStamina);
             _animator.SetBool("isSprinting", _isSprinting);
         }
 

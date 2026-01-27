@@ -20,6 +20,7 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private Image _selectedItemIcon;
     [SerializeField] private TextMeshProUGUI _selectedItemName;
     [SerializeField] private TextMeshProUGUI _selectedItemDescription;
+    [Header("Avatar Related")]
     // Health UI
     [SerializeField] private TextMeshProUGUI _livesCounter;
     [SerializeField] private GameObject _healthContainer;
@@ -29,6 +30,10 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private Image _punchIndicator;
     [SerializeField] private Image _specialIndicator;
     [SerializeField] private Sprite[] _indicatorSpriteList;
+    // Stamina UI
+    [SerializeField] private Slider _staminaSlider;
+    [SerializeField] private Color _normalStaminaColor;
+    [SerializeField] private Color _outOfStaminaColor;
 
     private List<GameObject> _heartList = new List<GameObject>();
 
@@ -170,7 +175,7 @@ public class GameUIManager : MonoBehaviour
 
     public void ResetHeartUI()
     {
-        if(_heartList.Count == 0)
+        if (_heartList.Count == 0)
         {
             return;
         }
@@ -225,5 +230,22 @@ public class GameUIManager : MonoBehaviour
                 _specialIndicator.sprite = _indicatorSpriteList[5];
                 break;
         }
+    }
+
+    // Stamina UI Logic
+    public void UpdateStamina(float currentStamina, float maxStamina)
+    {
+        _staminaSlider.value = currentStamina / maxStamina;
+    }
+
+    public void UpdateStaminaColor(bool isOutOfStamina)
+    {
+        Image fillRect = _staminaSlider.fillRect.gameObject.GetComponent<Image>();
+        if (_normalStaminaColor == null && _outOfStaminaColor == null)
+        {
+            return;
+        }
+
+        fillRect.color = (isOutOfStamina) ? _outOfStaminaColor : _normalStaminaColor;
     }
 }

@@ -3804,8 +3804,8 @@ MonoBehaviour:
   runSpeed: 15
   crouchSpeed: 5
   rotationSpeed: 5
-  jumpForce: 10
-  doubleJumpForce: 5
+  jumpForce: 15
+  doubleJumpForce: 10
   maxStamina: 20
   currentStamina: 20
   NormalHeight: 13.93906
@@ -3841,7 +3841,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: cebddd8048d8bc146ad18c50ad1a41b8, type: 3}
   - {fileID: 8300000, guid: 7101bed989fe3fd448c4f8d37c198e73, type: 3}
   - {fileID: 8300000, guid: ec7f5756acbeda044ae95623babfb276, type: 3}
-  - {fileID: 8300000, guid: 60151402bb71f1d4f862fe13ce4abf8b, type: 3}
+  - {fileID: 8300000, guid: 71a3a63c61dcdb941a5f91c4b595d87f, type: 3}
   _normalCamera: {fileID: 0}
   _crouchCamera: {fileID: 0}
   _isCapsule: 0
