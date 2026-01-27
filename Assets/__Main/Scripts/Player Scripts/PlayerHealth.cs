@@ -7,8 +7,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [SerializeField] private float _maxHealth = 3;
     [SerializeField] private float _currentHealth;
-    [SerializeField] private float _maxLives = 99f;
-    [SerializeField] private float _currentLives;
+    [SerializeField] private int _maxLives = 99;
+    [SerializeField] private int _currentLives;
     [SerializeField] private float _invincibilityTime = 0;
     [SerializeField] private bool _isInvincible = false;
     [SerializeField] private Transform _currentCheckPoint;
@@ -36,7 +36,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         _currentHealth = _maxHealth;
         _currentLives = 3;
-        //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
+        GameUIManager.instance.UpdateLivesCounter(_currentLives);
+        GameUIManager.instance.InstaniateHeartsUI(_maxHealth);
     }
 
 
@@ -57,11 +58,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         else
         {
             _pAnimator.SetTrigger("DamageTrigger");
+            GameUIManager.instance.DestroyHeartUI(_currentHealth);
             StartCoroutine(DamageTimer());
             StartCoroutine(InvincibleEffect());
+            
         }
-
-        //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
     }
 
     public bool AddHealthPoint() //Heal when taking a Heart.
@@ -78,7 +79,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             {
                 _currentHealth = _maxHealth;
             }
-            //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
+            GameUIManager.instance.HealHeartUI(_currentHealth);
             return true;
         }
 
@@ -94,6 +95,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         {
             _currentLives++;
             _damageAudioSource.PlayOneShot(_damageAudioClips[2]);
+            GameUIManager.instance.UpdateLivesCounter(_currentLives);
             return true;
 
         }
@@ -104,6 +106,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         _currentLives--;
         _damageAudioSource.PlayOneShot(_damageAudioClips[3]);
+        GameUIManager.instance.UpdateLivesCounter(_currentLives);
     }
 
     public void onDeath() //On PLayer's death disable movement of all kind, and show lose screen.
@@ -170,7 +173,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             Debug.Log("Respawn point or respawn effect are null");
         }
 
-
+        GameUIManager.instance.ResetHeartUI();
     }
 
     public void UpdateRendererList()

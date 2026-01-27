@@ -114,6 +114,7 @@ public class PlayerAttack : MonoBehaviour
         _armCollider.enabled = true;
         _audioSources[0].PlayOneShot(_audioClips[0]);
         _animator.SetTrigger("PunchTrigger");
+        GameUIManager.instance.DisableIndicator(IndicatorType.Punch);
     }
 
     private void HandleCooldowns()
@@ -126,6 +127,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 _attackCooldownTimer = 0;
                 canAttack = true;
+                GameUIManager.instance.EnableIndicator(IndicatorType.Punch);
             }
         }
 
@@ -137,6 +139,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 _shootCooldownTimer = 0;
                 canShoot = true;
+                GameUIManager.instance.EnableIndicator(IndicatorType.Shoot);
             }
         }
         
@@ -162,6 +165,7 @@ public class PlayerAttack : MonoBehaviour
         }
         _offenseState = PlayerOffenseState.Shooting;
         canShoot = false;
+        GameUIManager.instance.DisableIndicator(IndicatorType.Shoot);
 
         // Change Player Rotation On Shot
         Vector3 lookDir = _cameraTransform.forward;

@@ -7,7 +7,9 @@ public static class GameEnums
 
     public enum PlayerOffenseState { Disabled, Neutral, Attacking, Shooting };
 
-    public enum CollectibleType { NormalCollectible, SecretCollectible, HealthPoint, LifePoint};
+    public enum CollectibleType { NormalCollectible, SecretCollectible, HealthPoint, LifePoint };
+
+    public enum IndicatorType { Shoot, Punch, Special};
 
 
 }

@@ -20,6 +20,17 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private Image _selectedItemIcon;
     [SerializeField] private TextMeshProUGUI _selectedItemName;
     [SerializeField] private TextMeshProUGUI _selectedItemDescription;
+    // Health UI
+    [SerializeField] private TextMeshProUGUI _livesCounter;
+    [SerializeField] private GameObject _healthContainer;
+    [SerializeField] private GameObject _heartPrefab;
+    // Indicator UI
+    [SerializeField] private Image _shootIndicator;
+    [SerializeField] private Image _punchIndicator;
+    [SerializeField] private Image _specialIndicator;
+    [SerializeField] private Sprite[] _indicatorSpriteList;
+
+    private List<GameObject> _heartList = new List<GameObject>();
 
     public static GameUIManager instance;
 
@@ -33,6 +44,8 @@ public class GameUIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+
     }
 
     private void Start()
@@ -41,7 +54,14 @@ public class GameUIManager : MonoBehaviour
         _inventoryPanel.SetActive(false);
     }
 
-    // 
+    //=================== General ===================
+
+    private void ToggleBackgroundOverlay()
+    {
+        _backgroundOverlay.SetActive(!_backgroundOverlay.activeSelf);
+    }
+
+    //=================== Inventory Related ===================
     public void UpdateBackpackTipText(string text)
     {
         _backpackTipText.text = text;
@@ -78,6 +98,7 @@ public class GameUIManager : MonoBehaviour
 
     }
 
+    //=================== Inventory Viewer Related ===================
     public void SetItemInfo(Collectible item)
     {
         _selectedItemIcon.sprite = item.getIcon();
@@ -106,8 +127,103 @@ public class GameUIManager : MonoBehaviour
         slot.GetComponent<InventorySlot>().SetItem(item);
     }
 
-    private void ToggleBackgroundOverlay()
+    //=================== Player  Stats Related ===================
+
+    // Health UI Logic
+    public void UpdateLivesCounter(int currentLives)
     {
-        _backgroundOverlay.SetActive(!_backgroundOverlay.activeSelf);
+        _livesCounter.text = currentLives.ToString();
+    }
+
+    public void InstaniateHeartsUI(float noOfHearts)
+    {
+        if (_heartList.Count == 0)
+        {
+            for (int i = 0; i < noOfHearts; i++)
+            {
+                GameObject heart = Instantiate(_heartPrefab, _healthContainer.transform);
+                _heartList.Add(heart);
+            }
+        }
+    }
+
+    public void HealHeartUI(float _currentHeart)
+    {
+        if (_heartList.Count == 0)
+        {
+            return;
+        }
+
+        _heartList[((int)_currentHeart) - 1].GetComponent<Animator>().SetTrigger("HeartGained");
+    }
+
+    public void DestroyHeartUI(float _currentHeart)
+    {
+        if (_heartList.Count == 0)
+        {
+            Debug.LogWarning("Heart List is empty");
+            return;
+        }
+
+        _heartList[((int)_currentHeart)].GetComponent<Animator>().SetTrigger("HeartLost");
+    }
+
+    public void ResetHeartUI()
+    {
+        if(_heartList.Count == 0)
+        {
+            return;
+        }
+
+        foreach (GameObject heart in _heartList)
+        {
+            heart.GetComponent<Animator>().SetTrigger("HeartGained");
+        }
+    }
+
+    // Indicator UI Logic
+
+    public void EnableIndicator(IndicatorType type)
+    {
+        if (_indicatorSpriteList.Length == 0)
+        {
+            Debug.LogWarning("Indicator Sprite List is Empty");
+            return;
+        }
+
+        switch (type)
+        {
+            case IndicatorType.Shoot:
+                _shootIndicator.sprite = _indicatorSpriteList[0];
+                break;
+            case IndicatorType.Punch:
+                _punchIndicator.sprite = _indicatorSpriteList[1];
+                break;
+            case IndicatorType.Special:
+                _specialIndicator.sprite = _indicatorSpriteList[2];
+                break;
+        }
+    }
+
+    public void DisableIndicator(IndicatorType type)
+    {
+        if (_indicatorSpriteList.Length == 0 || _indicatorSpriteList.Length != 6)
+        {
+            Debug.LogWarning("Indicator Sprite List is Empty");
+            return;
+        }
+
+        switch (type)
+        {
+            case IndicatorType.Shoot:
+                _shootIndicator.sprite = _indicatorSpriteList[3];
+                break;
+            case IndicatorType.Punch:
+                _punchIndicator.sprite = _indicatorSpriteList[4];
+                break;
+            case IndicatorType.Special:
+                _specialIndicator.sprite = _indicatorSpriteList[5];
+                break;
+        }
     }
 }

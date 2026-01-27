@@ -257,10 +257,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    public void RotatePlayer(Quaternion TargetRotation)
-    {
 
-    }
 
     public void DisableMovement()
     {
@@ -283,7 +280,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJump()
     {
-        if (_isCrouched) return;
+        if (_isCrouched || movementState == PlayerMovementState.Disabled) return;
         // Allow Player to jump if on ground and jump button pressed.
         if (_isGrounded)
         {
@@ -346,6 +343,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleCrouch()
     {
+        if( movementState == PlayerMovementState.Disabled)
+        {
+            return;
+        }
 
         //Crouch Code
         if (_isGrounded && !_isCrouched && !_isSprinting)
@@ -456,6 +457,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _saCooldownTimer = 0;
             _canUseSpecialAbility = true;
+            GameUIManager.instance.EnableIndicator(IndicatorType.Special);
         }
     }
 
@@ -482,6 +484,7 @@ public class PlayerMovement : MonoBehaviour
         _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
         UpdateTrails();
         _animator.SetBool("isUsingSA", true);
+        GameUIManager.instance.DisableIndicator(IndicatorType.Special);
     }
 
     private void PerformDash()
@@ -507,6 +510,7 @@ public class PlayerMovement : MonoBehaviour
         _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
         UpdateTrails();
         _animator.SetBool("isUsingSA", true);
+        GameUIManager.instance.DisableIndicator(IndicatorType.Special);
     }
 
     private void PerformBash()
