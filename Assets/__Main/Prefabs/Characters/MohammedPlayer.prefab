@@ -3025,7 +3025,7 @@ GameObject:
   - component: {fileID: 2996252769873165074}
   m_Layer: 0
   m_Name: MohammedPlayer
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3098,7 +3098,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &1802193989060762578
@@ -3221,10 +3221,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6975312315ec6442997a718b97ef7b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
+  itemlist: []
   _inventoryAudioSource: {fileID: 7163178491474968655}
   _inventoryAudioClips:
-  - {fileID: 8300000, guid: d963fb175711d47429e01110725f1497, type: 3}
-  - {fileID: 8300000, guid: dc49c53fb49214741a0182e88327e293, type: 3}
+  - {fileID: 8300000, guid: 400a9c8dc14f4ef45ac41f2463b7d399, type: 3}
+  - {fileID: 8300000, guid: 8046deba84e151d48af27aeb31b01a12, type: 3}
+  - {fileID: 8300000, guid: 61884ee594d0e384a9c01b4c6ddd0ee4, type: 3}
 --- !u!114 &7851973333224507058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3296,7 +3298,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: e01110f3e638c7147a1d39592e2a35bb, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0

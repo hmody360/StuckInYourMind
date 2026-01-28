@@ -1,7 +1,8 @@
 using Unity.Cinemachine;
 using UnityEngine;
+using System.Collections.Generic;
 using static GameEnums;
-using static UnityEngine.Rendering.VirtualTexturing.Debugging;
+using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -58,12 +59,11 @@ public class PlayerMovement : MonoBehaviour
     private CapsuleCollider _playerCollider;
     private PlayerInputHandler _input;
     private Animator _animator;
+    private Renderer[] _skinnedMeshRendererList;
 
     //Input States
     private Vector2 _moveInput;
     private bool _sprintHeld;
-    private bool _crouchPressed;
-    private bool _specialPressed;
 
     // Runtime Changing Values
 
@@ -93,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
     private Quaternion _targetRotation;
     private Vector3 _playerDirection;
 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created.
 
     private void Awake()
@@ -100,19 +101,22 @@ public class PlayerMovement : MonoBehaviour
         _theRigidBody = GetComponent<Rigidbody>(); //Getting Rigidbody from Player Object.
         _playerCollider = GetComponent<CapsuleCollider>();
         _animator = GetComponent<Animator>();
+        _skinnedMeshRendererList = GetComponentsInChildren<SkinnedMeshRenderer>();
         _cameraTransform = Camera.main.transform;
         _input = GetComponent<PlayerInputHandler>();
+
     }
     void Start()
     {
 
         _targetRotation = transform.rotation;
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         _theRigidBody.freezeRotation = true; //This is to stop other game objects from affecting the player's rotation
         _currentSpeed = speed;
         currentStamina = maxStamina;
 
-        //GameUIManager.instance.SetEnergyFill(currentStamina, maxStamina);
+        GameUIManager.instance.UpdateStamina(currentStamina, maxStamina);
     }
 
 
@@ -125,6 +129,7 @@ public class PlayerMovement : MonoBehaviour
         _input.OnSprint += held => _sprintHeld = held;
         _input.OnCrouch += HandleCrouch;
         _input.OnSpecial += HandleSA;
+        _input.OnPause += GameUIManager.instance.TogglePauseMenu;
     }
 
     private void OnDisable()
@@ -134,6 +139,7 @@ public class PlayerMovement : MonoBehaviour
         _input.OnSprint -= held => _sprintHeld = held;
         _input.OnCrouch -= HandleCrouch;
         _input.OnSpecial -= HandleSA;
+        _input.OnPause -= GameUIManager.instance.TogglePauseMenu;
     }
 
     private void Update()
@@ -141,7 +147,6 @@ public class PlayerMovement : MonoBehaviour
 
         if(movementState == PlayerMovementState.Disabled)
         {
-            ResetFrameInput();
             return;
         }
 
@@ -150,7 +155,6 @@ public class PlayerMovement : MonoBehaviour
         HandleCooldowns();
         CheckBoredTimer();
 
-        ResetFrameInput();
 
     }
 
@@ -251,14 +255,11 @@ public class PlayerMovement : MonoBehaviour
             _targetRotation = Quaternion.LookRotation(_playerDirection); // makes the target rotation that we want the player to move to
             
         }
-        _theRigidBody.MoveRotation(Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeed * Time.deltaTime)); //Using lerp to smooth the player rotation using current rotation, target rotaion and rotation speed.
+        _theRigidBody.MoveRotation(Quaternion.Lerp(transform.rotation, _targetRotation, rotationSpeed * Time.fixedDeltaTime)); //Using lerp to smooth the player rotation using current rotation, target rotaion and rotation speed.
 
     }
 
-    public void RotatePlayer(Quaternion TargetRotation)
-    {
 
-    }
 
     public void DisableMovement()
     {
@@ -269,21 +270,19 @@ public class PlayerMovement : MonoBehaviour
 
         _theRigidBody.linearVelocity = Vector3.zero;
         UpdateTrails();
-
-        _animator.SetBool("isDead", true);
     }
 
-    private void ResetFrameInput()
+    public void EnableMovement()
     {
-        _crouchPressed = false;
-        _specialPressed = false;
+        movementState = PlayerMovementState.Movement;
+        _canUseSpecialAbility = true;
     }
 
     // Jump Logic =======================================================================
 
     private void HandleJump()
     {
-        if (_isCrouched) return;
+        if (_isCrouched || movementState == PlayerMovementState.Disabled) return;
         // Allow Player to jump if on ground and jump button pressed.
         if (_isGrounded)
         {
@@ -322,9 +321,11 @@ public class PlayerMovement : MonoBehaviour
                 currentStamina = 0;
                 _canSprint = false;
                 _SFXSourceList[3].PlayOneShot(_SFXClipList[7]);
+                GameUIManager.instance.UpdateStaminaColor(true);
             }
 
             _SFXSourceList[0].clip = _SFXClipList[2];
+            GameUIManager.instance.UpdateStamina(currentStamina, maxStamina);
             _animator.SetBool("isSprinting", _isSprinting);
         }
         else if (currentStamina < maxStamina)
@@ -334,8 +335,10 @@ public class PlayerMovement : MonoBehaviour
             {
                 currentStamina = maxStamina;
                 _canSprint = true;
+                GameUIManager.instance.UpdateStaminaColor(false);
             }
             _SFXSourceList[0].clip = _SFXClipList[0];
+            GameUIManager.instance.UpdateStamina(currentStamina, maxStamina);
             _animator.SetBool("isSprinting", _isSprinting);
         }
 
@@ -346,6 +349,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleCrouch()
     {
+        if( movementState == PlayerMovementState.Disabled)
+        {
+            return;
+        }
 
         //Crouch Code
         if (_isGrounded && !_isCrouched && !_isSprinting)
@@ -363,9 +370,9 @@ public class PlayerMovement : MonoBehaviour
             _isCrouched = true;
             _crouchCamera.Priority = 1;
             _normalCamera.Priority = 0;
+            DeactivateMesh();
             _animator.SetBool("isCrouched", _isCrouched);
             _SFXSourceList[0].clip = _SFXClipList[1];
-
             _SFXSourceList[2].PlayOneShot(_SFXClipList[5]);
         }
         else if (_isCrouched && _canUncrouch)
@@ -380,9 +387,10 @@ public class PlayerMovement : MonoBehaviour
                 _playerCollider.center = new Vector3(0f, NormalCenter, 0f);
                 _playerCollider.height = NormalHeight;
             }
+            _isCrouched = false;
             _normalCamera.Priority = 1;
             _crouchCamera.Priority = 0;
-            _isCrouched = false;
+            ActivateMesh();
             _animator.SetBool("isCrouched", _isCrouched);
             _currentSpeed = speed;
             _SFXSourceList[0].clip = _SFXClipList[0];
@@ -413,6 +421,8 @@ public class PlayerMovement : MonoBehaviour
         if(!_isBored && _boredTimer >= _timeTillBored)
         {
             _isBored = true;
+            int RandomIdle = Random.Range(0, 3);
+            _animator.SetFloat("Bored_Idle", RandomIdle);
             _animator.SetBool("isBored", _isBored);
         }
     }
@@ -453,6 +463,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _saCooldownTimer = 0;
             _canUseSpecialAbility = true;
+            GameUIManager.instance.EnableIndicator(IndicatorType.Special);
         }
     }
 
@@ -479,6 +490,7 @@ public class PlayerMovement : MonoBehaviour
         _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
         UpdateTrails();
         _animator.SetBool("isUsingSA", true);
+        GameUIManager.instance.DisableIndicator(IndicatorType.Special);
     }
 
     private void PerformDash()
@@ -504,6 +516,7 @@ public class PlayerMovement : MonoBehaviour
         _SFXSourceList[4].PlayOneShot(_SFXSourceList[4].clip);
         UpdateTrails();
         _animator.SetBool("isUsingSA", true);
+        GameUIManager.instance.DisableIndicator(IndicatorType.Special);
     }
 
     private void PerformBash()
@@ -545,11 +558,33 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //Helper Code
+
     private void CheckGround()
     {
         _isGrounded = Physics.CheckSphere(transform.position + Vector3.up * _groundCheckerOffset, _groundCheckerRadius, _groundLayer); //Checking if player is on ground.
     }
 
+    private void DeactivateMesh()
+    {
+        foreach (Renderer mesh in _skinnedMeshRendererList)
+        {
+            mesh.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+        }
+    }
+
+    private void ActivateMesh()
+    {
+        foreach (Renderer mesh in _skinnedMeshRendererList)
+        {
+            mesh.shadowCastingMode = ShadowCastingMode.On;
+        }
+    }
+
+    public void UpdateRendererList()
+    {
+        _skinnedMeshRendererList = GetComponentsInChildren<Renderer>();
+    }
     // Gizmos =======================================================================
     private void OnDrawGizmos() //Gizmo to draw the ground checker sphere.
     {

@@ -1,12 +1,24 @@
+using System.Collections;
+using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
-    public float maxHealth;
-    public float currentHealth;
+    [SerializeField] private float _maxHealth = 3;
+    [SerializeField] private float _currentHealth;
+    [SerializeField] private int _maxLives = 99;
+    [SerializeField] private int _currentLives;
+    [SerializeField] private float _invincibilityTime = 0;
+    [SerializeField] private bool _isInvincible = false;
+    [SerializeField] private Transform _currentCheckPoint;
+    [SerializeField] private GameObject _respawnEffect;
+
 
     private PlayerMovement _pMovement;
+    private PlayerAttack _pAttack;
+    private Animator _pAnimator;
+    private Renderer[] _skinnedMeshRendererList;
 
     [SerializeField] private AudioSource _damageAudioSource;
     [SerializeField] private AudioClip[] _damageAudioClips;
@@ -15,49 +27,104 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private void Awake()
     {
         _pMovement = GetComponent<PlayerMovement>();
+        _pAttack = GetComponent<PlayerAttack>();
+        _pAnimator = GetComponent<Animator>();
+        _skinnedMeshRendererList = GetComponentsInChildren<Renderer>();
     }
 
     private void Start() // Set Player Health and update UI
     {
-        currentHealth = maxHealth;
-        //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
+        _currentHealth = _maxHealth;
+        _currentLives = 3;
+        GameUIManager.instance.UpdateLivesCounter(_currentLives);
+        GameUIManager.instance.InstaniateHeartsUI(_maxHealth);
     }
 
 
-    public void takeDamage(float damage) //Take Damage from Enemy and Bad Health Vials.
+    public void takeDamage(float damage) //Take Damage from Enemy.
     {
-        currentHealth -= damage;
+        if (_isInvincible)
+        {
+            return;
+        }
+
+        _currentHealth -= damage;
         _damageAudioSource.PlayOneShot(_damageAudioClips[0]);
 
-        if (currentHealth <= 0)
+        if (_currentHealth <= 0)
         {
             onDeath();
-            currentHealth = 0;
         }
-
-        //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
+        else
+        {
+            _pAnimator.SetTrigger("DamageTrigger");
+            GameUIManager.instance.DestroyHeartUI(_currentHealth);
+            StartCoroutine(DamageTimer());
+            StartCoroutine(InvincibleEffect());
+            
+        }
     }
 
-    public void heal(float healAmount) //Heal when taking a good Health Vial.
+    public bool AddHealthPoint() //Heal when taking a Heart.
     {
-        currentHealth += healAmount;
-        _damageAudioSource.PlayOneShot(_damageAudioClips[2]);
-        if (currentHealth > maxHealth)
+        if (_currentHealth >= _maxHealth)
         {
-            currentHealth = maxHealth;
+            return false;
+        }
+        else
+        {
+            _currentHealth++;
+            _damageAudioSource.PlayOneShot(_damageAudioClips[1]);
+            if (_currentHealth > _maxHealth)
+            {
+                _currentHealth = _maxHealth;
+            }
+            GameUIManager.instance.HealHeartUI(_currentHealth);
+            return true;
         }
 
-        //UIManger.instance.UpdateHealth(currentHealth, maxHealth);
+    }
+
+    public bool AddLifePoint()
+    {
+        if (_currentLives >= _maxLives)
+        {
+            return false;
+        }
+        else
+        {
+            _currentLives++;
+            _damageAudioSource.PlayOneShot(_damageAudioClips[2]);
+            GameUIManager.instance.UpdateLivesCounter(_currentLives);
+            return true;
+
+        }
+
+    }
+
+    private void RemoveLifePoint()
+    {
+        _currentLives--;
+        _damageAudioSource.PlayOneShot(_damageAudioClips[3]);
+        GameUIManager.instance.UpdateLivesCounter(_currentLives);
     }
 
     public void onDeath() //On PLayer's death disable movement of all kind, and show lose screen.
     {
         if (_pMovement != null)
         {
-            //_pMovement.canMove = false;
-            _damageAudioSource.PlayOneShot(_damageAudioClips[1]);
-            Time.timeScale = 0f;
-            //UIManger.instance.LoseScreen();
+            if (_currentLives <= 0)
+            {
+                StartCoroutine(DeathSequence());
+                _currentHealth = 0;
+            }
+            else
+            {
+                RemoveLifePoint();
+                Respawn();
+                // Update Lives in UI & Show Lives UI for a bit then disapper
+            }
+
         }
     }
 
@@ -71,5 +138,86 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         }
     }
 
+    public float getMaxHealth()
+    {
+        return _maxHealth;
+    }
 
+    public float getCurrentHealth()
+    {
+        return _currentHealth;
+    }
+
+    public float getMaxLives()
+    {
+        return _maxLives;
+    }
+
+    public float getCurrentLives()
+    {
+        return _maxHealth;
+    }
+
+    private void Respawn()
+    {
+        _currentHealth = _maxHealth;
+        _isInvincible = false;
+        if (_currentCheckPoint != null && _respawnEffect != null)
+        {
+            transform.localPosition = _currentCheckPoint.position;
+            _pAnimator.SetTrigger("RespawnTrigger");
+            _respawnEffect.SetActive(true);
+        }
+        else
+        {
+            Debug.Log("Respawn point or respawn effect are null");
+        }
+
+        GameUIManager.instance.ResetHeartUI();
+    }
+
+    public void UpdateRendererList()
+    {
+        _skinnedMeshRendererList = GetComponentsInChildren<Renderer>();
+    }
+
+    private IEnumerator DamageTimer()
+    {
+        _isInvincible = true;
+        yield return new WaitForSeconds(_invincibilityTime);
+        _isInvincible = false;
+    }
+
+    private IEnumerator InvincibleEffect()
+    {
+        while (_isInvincible)
+        {
+            foreach (Renderer smr in _skinnedMeshRendererList)
+            {
+                smr.enabled = false;
+            }
+
+            yield return new WaitForSeconds(.1f);
+            foreach (Renderer smr in _skinnedMeshRendererList)
+            {
+                smr.enabled = true;
+            }
+            yield return new WaitForSeconds(.1f);
+        }
+    }
+
+
+
+    private IEnumerator DeathSequence()
+    {
+        _pMovement.DisableMovement();
+        _pAttack.DisableOffense();
+        _damageAudioSource.PlayOneShot(_damageAudioClips[4]);
+        _pAnimator.SetBool("isDead", true);
+        yield return new WaitForSeconds(3f);
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        GameUIManager.instance.ShowGameOverMenu();
+    }
 }

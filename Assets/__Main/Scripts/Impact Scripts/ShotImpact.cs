@@ -15,7 +15,7 @@ public class ShotImpact : MonoBehaviour
         if (other.CompareTag("Enemy"))
         {
             Debug.Log($"Shot inflicted {shotDamage} Damage");
-            Destroy(other.gameObject);
+            other.GetComponent<EnemyAI>().takeDamage(shotDamage);
             Destroy(gameObject);
         }
         else

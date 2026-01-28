@@ -20,7 +20,7 @@ public class AttackImpact : MonoBehaviour
             {
                 _punchLandAudioSource.PlayOneShot(_punchLandAudioSource.clip);
             }
-            Destroy(other.gameObject);
+            other.GetComponent<EnemyAI>().takeDamage(attackPower);
         }
     }
 }
