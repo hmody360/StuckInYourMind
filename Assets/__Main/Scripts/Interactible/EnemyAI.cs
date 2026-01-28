@@ -248,6 +248,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         }
         else
         {
+            _enemyAnimator.SetTrigger("KnockbackTrigger");
             _DamageSFX.PlayOneShot(_damageAudioClips[0]);
         }
 
