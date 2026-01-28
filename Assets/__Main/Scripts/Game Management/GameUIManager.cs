@@ -3,11 +3,13 @@ using UnityEngine;
 using static GameEnums;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System;
 
 public class GameUIManager : MonoBehaviour
 {
     [Header("General")]
     [SerializeField] private GameObject _backgroundOverlay;
+    [SerializeField] private GameObject _HUD;
 
     [Header("Inventory Related")]
     // Main Inventory
@@ -34,8 +36,17 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private Slider _staminaSlider;
     [SerializeField] private Color _normalStaminaColor;
     [SerializeField] private Color _outOfStaminaColor;
+    [Header("Pause Menu Related")]
+    [SerializeField] private GameObject _pausePanel;
+    [SerializeField] private GameObject _settingsPanel;
+    [SerializeField] private GameObject _howToPlayPanel;
+    [Header("Game Over Related")]
+    [SerializeField] private GameObject _gameOverPanel;
 
     private List<GameObject> _heartList = new List<GameObject>();
+
+    public static event Action OnGamePaused;
+    public static event Action OnGameResumed;
 
     public static GameUIManager instance;
 
@@ -132,7 +143,7 @@ public class GameUIManager : MonoBehaviour
         slot.GetComponent<InventorySlot>().SetItem(item);
     }
 
-    //=================== Player  Stats Related ===================
+    //=================== Player Stats Related ===================
 
     // Health UI Logic
     public void UpdateLivesCounter(int currentLives)
@@ -247,5 +258,61 @@ public class GameUIManager : MonoBehaviour
         }
 
         fillRect.color = (isOutOfStamina) ? _outOfStaminaColor : _normalStaminaColor;
+    }
+
+    //=================== Pause Menu Related ===================
+
+    //Pause Menu
+    public void TogglePauseMenu()
+    {
+
+        _backgroundOverlay.SetActive(!_pausePanel.activeSelf);
+        _pausePanel.SetActive(!_pausePanel.activeSelf);
+
+        if (_pausePanel.activeSelf)
+        {
+            _HUD.SetActive(false);
+            _inventoryPanel.SetActive(false);
+            _itemViewerPanel.SetActive(false);
+            OnGamePaused?.Invoke();
+        }
+        else
+        {
+            _HUD.SetActive(true);
+            OnGameResumed?.Invoke();
+        }
+
+    }
+
+    public void OpenSettings()
+    {
+        _pausePanel.SetActive(false);
+        _settingsPanel.SetActive(true);
+    }
+
+    public void CloseSettings()
+    {
+        _pausePanel.SetActive(true);
+        _settingsPanel.SetActive(false);
+    }
+
+    public void OpenHowToPlay()
+    {
+        _pausePanel.SetActive(false);
+        _howToPlayPanel.SetActive(true);
+    }
+
+    public void CloseHowToPlay()
+    {
+        _pausePanel.SetActive(true);
+        _howToPlayPanel.SetActive(false);
+    }
+
+    //=================== GameOver Menu Related ===================
+
+    public void ShowGameOverMenu()
+    {
+        _backgroundOverlay.SetActive(true);
+        _gameOverPanel.SetActive(true);
     }
 }

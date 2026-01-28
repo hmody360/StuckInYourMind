@@ -26,11 +26,13 @@ public class PlayerInventory : MonoBehaviour
     private void OnEnable()
     {
         _input.OnInventory += ToggleInventory;
+        GameUIManager.OnGamePaused += setIsOpenFalse;
     }
 
     private void OnDisable()
     {
         _input.OnInventory -= ToggleInventory;
+        GameUIManager.OnGamePaused -= setIsOpenFalse;
     }
 
     public void ToggleInventory()
@@ -61,10 +63,10 @@ public class PlayerInventory : MonoBehaviour
 
         if (item.getIsWearble())
         {
-            if(_WearbleObject != null)
+            if (_WearbleObject != null)
             {
                 _WearbleObject.SetActive(true);
-                if(_pMovement != null && _pHealth != null)
+                if (_pMovement != null && _pHealth != null)
                 {
                     _pMovement.UpdateRendererList();
                     _pHealth.UpdateRendererList();
@@ -78,7 +80,17 @@ public class PlayerInventory : MonoBehaviour
             {
                 Debug.LogWarning("Wearble Not assigned");
             }
-            
+
         }
+    }
+
+    public bool getIsOpen()
+    {
+        return isOpen;
+    }
+
+    public void setIsOpenFalse()
+    {
+        isOpen = false;
     }
 }

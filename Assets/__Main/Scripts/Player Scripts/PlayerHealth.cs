@@ -218,6 +218,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
-        //UIManger.instance.LoseScreen();
+        GameUIManager.instance.ShowGameOverMenu();
     }
 }

@@ -129,6 +129,7 @@ public class PlayerMovement : MonoBehaviour
         _input.OnSprint += held => _sprintHeld = held;
         _input.OnCrouch += HandleCrouch;
         _input.OnSpecial += HandleSA;
+        _input.OnPause += GameUIManager.instance.TogglePauseMenu;
     }
 
     private void OnDisable()
@@ -138,6 +139,7 @@ public class PlayerMovement : MonoBehaviour
         _input.OnSprint -= held => _sprintHeld = held;
         _input.OnCrouch -= HandleCrouch;
         _input.OnSpecial -= HandleSA;
+        _input.OnPause -= GameUIManager.instance.TogglePauseMenu;
     }
 
     private void Update()

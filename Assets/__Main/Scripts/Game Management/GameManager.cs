@@ -24,11 +24,15 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        GameUIManager.OnGamePaused += PauseGame;
+        GameUIManager.OnGameResumed += ResumeGame;
     }
 
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        GameUIManager.OnGamePaused -= PauseGame;
+        GameUIManager.OnGameResumed -= ResumeGame;
     }
 
     public void PauseGame()
@@ -49,6 +53,18 @@ public class GameManager : MonoBehaviour
         Cursor.visible = false;
         _playerMovement.EnableMovement();
         _playerAttack.EnableOffense();
+    }
+
+    public void RestartCurrentScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+        Time.timeScale = 1f;
+    }
+
+    public void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+        Time.timeScale = 1f;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

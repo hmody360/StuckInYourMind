@@ -18,6 +18,9 @@ public class PlayerInputHandler : MonoBehaviour
     //Inventory Related
     public event Action OnInventory;
 
+    //Pause/UnPause Related
+    public event Action OnPause;
+
     private PlayerInputActions _input;
 
 
@@ -50,6 +53,9 @@ public class PlayerInputHandler : MonoBehaviour
         //Inventory
         _input.Player.Inventory.performed += _ => OnInventory?.Invoke();
 
+        // Pause
+        _input.Player.Pause.performed += _ => OnPause?.Invoke();
+
     }
 
     private void OnDisable()
@@ -75,6 +81,9 @@ public class PlayerInputHandler : MonoBehaviour
 
         //Inventory
         _input.Player.Inventory.performed -= _ => OnInventory?.Invoke();
+
+        // Pause
+        _input.Player.Pause.performed -= _ => OnPause?.Invoke();
     }
 }
 
