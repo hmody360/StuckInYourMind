@@ -3,6 +3,7 @@ using UnityEngine;
 public class GroundImpact : MonoBehaviour
 {
     [SerializeField] private float impactTime;
+    [SerializeField] private float impactForce = 3f;
 
     private void Start()
     {
@@ -12,7 +13,7 @@ public class GroundImpact : MonoBehaviour
     {
         if (other.CompareTag("Enemy"))
         {
-            Destroy(other.gameObject);
+            other.GetComponent<EnemyAI>().takeDamage(impactForce);
         }
     }
 }

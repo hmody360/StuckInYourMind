@@ -41,6 +41,7 @@ public class CollectibleObj : MonoBehaviour
                     break;
                 case CollectibleType.SecretCollectible:
                     _playerInventory.AddCollectible(_item);
+                    GameManager.instance.AddSecretCollectible();
                     GameUIManager.instance.AddItem(_item);
                     DestroyCollectible();
                     break;

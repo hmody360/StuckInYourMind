@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
+using static GameEnums;
+using System;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -13,6 +15,8 @@ public class PlayerInventory : MonoBehaviour
     private PlayerInputHandler _input;
     private PlayerMovement _pMovement;
     private PlayerHealth _pHealth;
+
+    public static event Action OnMainCollectiblesCollected;
 
     private void Awake()
     {
@@ -60,6 +64,7 @@ public class PlayerInventory : MonoBehaviour
         itemlist.Add(item);
         _animator.SetTrigger("PickupTrigger");
         _inventoryAudioSource.PlayOneShot(_inventoryAudioClips[2]);
+        CheckAllMainCollectiblesCollected();
 
         if (item.getIsWearble())
         {
@@ -82,6 +87,36 @@ public class PlayerInventory : MonoBehaviour
             }
 
         }
+    }
+
+    public bool CheckAllMainCollectiblesCollected()
+    {
+        if(itemlist.Count < 3)
+        {
+            return false;
+        }
+
+        int count = 0;
+        foreach (Collectible item in itemlist)
+        {
+            if (item.getType() == CollectibleType.NormalCollectible)
+            {
+                count++;
+            }
+        }
+
+        if(count >= 3)
+        {
+            Debug.Log("All Main Collectibles Collected");
+            OnMainCollectiblesCollected?.Invoke();  
+            return true;
+        }
+        else
+        {
+            Debug.Log("All Main Collectibles Not Yet Collected");
+            return false;
+        }
+        
     }
 
     public bool getIsOpen()
