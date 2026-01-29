@@ -43,11 +43,23 @@ public class CameraControl : MonoBehaviour
         UpdateUI(canvas4);
     }
 
- 
+
     public void GoToCam5()
     {
         SetCameraPriorities(cam5);
         UpdateUI(canvas5);
+    }
+
+    public void GoToMohammedCam()
+    {
+        SetCameraPriorities(cam4);
+        UpdateUI(null);
+    }
+
+    public void GoToOmarCam()
+    {
+        SetCameraPriorities(cam3);
+        UpdateUI(null);
     }
 
     public void GoToMain()

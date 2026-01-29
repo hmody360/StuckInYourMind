@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using Unity.Cinemachine;
@@ -11,7 +12,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] private int _currentLives;
     [SerializeField] private float _invincibilityTime = 0;
     [SerializeField] private bool _isInvincible = false;
-    [SerializeField] private Transform _currentCheckPoint;
+    [SerializeField] private Vector3 _currentCheckPoint;
     [SerializeField] private GameObject _respawnEffect;
 
 
@@ -23,6 +24,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] private AudioSource _damageAudioSource;
     [SerializeField] private AudioClip[] _damageAudioClips;
 
+    public static event Action<Vector3> OnCheckPointSet;
+
 
     private void Awake()
     {
@@ -30,6 +33,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         _pAttack = GetComponent<PlayerAttack>();
         _pAnimator = GetComponent<Animator>();
         _skinnedMeshRendererList = GetComponentsInChildren<Renderer>();
+        _currentCheckPoint = transform.localPosition;
     }
 
     private void Start() // Set Player Health and update UI
@@ -164,7 +168,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         _isInvincible = false;
         if (_currentCheckPoint != null && _respawnEffect != null)
         {
-            transform.localPosition = _currentCheckPoint.position;
+            transform.localPosition = _currentCheckPoint;
             _pAnimator.SetTrigger("RespawnTrigger");
             _respawnEffect.SetActive(true);
         }
@@ -174,6 +178,17 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         }
 
         GameUIManager.instance.ResetHeartUI();
+    }
+
+    public void SetCheckpoint(Vector3 position)
+    {
+        _currentCheckPoint = position;
+        OnCheckPointSet?.Invoke(_currentCheckPoint);
+    }
+
+    public Vector3 GetCheckPoint()
+    {
+        return _currentCheckPoint;
     }
 
     public void UpdateRendererList()

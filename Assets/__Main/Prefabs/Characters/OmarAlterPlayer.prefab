@@ -4014,7 +4014,7 @@ GameObject:
   - component: {fileID: 393311284815381473}
   m_Layer: 0
   m_Name: HitPoint
-  m_TagString: Untagged
+  m_TagString: Impact
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4563,7 +4563,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8849191074435166540}
   serializedVersion: 5
-  m_Mass: 2
+  m_Mass: 5
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -4600,10 +4600,10 @@ MonoBehaviour:
   runSpeed: 15
   crouchSpeed: 5
   rotationSpeed: 5
-  jumpForce: 20
-  doubleJumpForce: 5
-  maxStamina: 20
-  currentStamina: 20
+  jumpForce: 35
+  doubleJumpForce: 30
+  maxStamina: 10
+  currentStamina: 10
   NormalHeight: 16.17626
   crouchHeight: 10.53119
   NormalCenter: 8.077985

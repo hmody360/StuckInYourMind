@@ -1,34 +1,44 @@
 
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ClickTrigger : MonoBehaviour
 {
-    
+
     public CameraControl manager;
 
-    
-    public bool isCharacter2;
-    public bool isCharacter3;
+
+    public bool isMohammed;
+    public bool isOmar;
 
     void OnMouseEnter()
     {
-     
+
     }
 
     void OnMouseDown()
     {
-        if (isCharacter2)
+        if (isMohammed)
         {
-            manager.GoToCam4();
+            manager.GoToMohammedCam();
+            StartCoroutine(GoToPlayerScene("MohammedPlayScene"));
         }
-        else if (isCharacter3)
+        else if (isOmar)
         {
-            manager.GoToCam3();
+            manager.GoToOmarCam();
+            StartCoroutine(GoToPlayerScene("OmarPlayScene"));
         }
         else
         {
-           
+
             manager.GoToMain();
         }
+    }
+
+    private IEnumerator GoToPlayerScene(string sceneName)
+    {
+        yield return new WaitForSeconds(2f);
+        SceneManager.LoadScene(sceneName);
     }
 }

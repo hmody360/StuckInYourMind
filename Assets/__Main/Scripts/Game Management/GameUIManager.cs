@@ -4,6 +4,7 @@ using static GameEnums;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 
 public class GameUIManager : MonoBehaviour
 {
@@ -339,5 +340,18 @@ public class GameUIManager : MonoBehaviour
     {
         _promptText.text = "";
         _promptContainer.SetActive(false);
+    }
+
+    public void ShowPromptTimed(float time, string text)
+    {
+        StartCoroutine(ShowPromptWithTimer(time, text));
+    }
+
+    private IEnumerator ShowPromptWithTimer(float time, string text)
+    {
+        ShowPrompt(text);
+        yield return new WaitForSeconds(time);
+        HidePrompt();
+
     }
 }

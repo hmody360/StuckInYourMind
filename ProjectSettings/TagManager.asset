@@ -7,6 +7,7 @@ TagManager:
   - ItemSlot
   - Enemy
   - WinChecker
+  - Impact
   layers:
   - Default
   - TransparentFX

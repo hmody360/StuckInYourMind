@@ -6,11 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/__Main/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 0
-    path: Assets/_Reef/Scenes/MainMenu.unity
-    guid: efcc54dfb6ff6274c9e0e53b898ec95e
+    path: Assets/__Main/Scenes/Preload.unity
+    guid: a56eea0a05f171445903d2b88e158c2d
+  - enabled: 1
+    path: Assets/__Main/Scenes/MainMenu.unity
+    guid: a8c232fecb34e75489930c826112a33a
+  - enabled: 1
+    path: Assets/__Main/Scenes/OmarPlayScene.unity
+    guid: de3237d57271f794b9aea2e768f70fbe
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
