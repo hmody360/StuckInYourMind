@@ -10,6 +10,8 @@ public class GameUIManager : MonoBehaviour
     [Header("General")]
     [SerializeField] private GameObject _backgroundOverlay;
     [SerializeField] private GameObject _HUD;
+    [SerializeField] private GameObject _promptContainer;
+    [SerializeField] private TextMeshProUGUI _promptText;
 
     [Header("Inventory Related")]
     // Main Inventory
@@ -42,6 +44,7 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private GameObject _howToPlayPanel;
     [Header("Game Over Related")]
     [SerializeField] private GameObject _gameOverPanel;
+    [SerializeField] private GameObject _winPanel;
 
     private List<GameObject> _heartList = new List<GameObject>();
 
@@ -312,7 +315,29 @@ public class GameUIManager : MonoBehaviour
 
     public void ShowGameOverMenu()
     {
+        _HUD.SetActive(false);
         _backgroundOverlay.SetActive(true);
         _gameOverPanel.SetActive(true);
+    }
+
+    public void ShowWinMenu()
+    {
+        _HUD.SetActive(false);
+        _backgroundOverlay.SetActive(true);
+        _winPanel.SetActive(true);
+    }
+
+    //=================== Prompt Related ===================
+
+    public void ShowPrompt(string text)
+    {
+        _promptText.text = text;
+        _promptContainer.SetActive(true);
+    }
+
+    public void HidePrompt()
+    {
+        _promptText.text = "";
+        _promptContainer.SetActive(false);
     }
 }

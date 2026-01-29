@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ItemSlot
   - Enemy
+  - WinChecker
   layers:
   - Default
   - TransparentFX

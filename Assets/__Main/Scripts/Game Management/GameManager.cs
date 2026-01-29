@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 
     private PlayerMovement _playerMovement;
     private PlayerAttack _playerAttack;
+    private PlayerInputHandler _playerInputHandler;
     private void Awake()
     {
         if (instance == null)
@@ -42,8 +43,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
-        _playerMovement.DisableMovement();
-        _playerAttack.DisableOffense();
+        _playerInputHandler.enabled = false;
     }
 
     public void ResumeGame()
@@ -52,8 +52,7 @@ public class GameManager : MonoBehaviour
         isGamePaused = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        _playerMovement.EnableMovement();
-        _playerAttack.EnableOffense();
+        _playerInputHandler.enabled = true;
     }
 
     public void RestartCurrentScene()
@@ -70,6 +69,15 @@ public class GameManager : MonoBehaviour
         _collectedSecretCollectibles = 0;
     }
 
+    public void WinGame()
+    {
+        _playerInputHandler.enabled = false;
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        GameUIManager.instance.ShowWinMenu();
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "PlayerTestScene") //What To Do on level scene
@@ -77,6 +85,7 @@ public class GameManager : MonoBehaviour
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             _playerMovement = player.GetComponent<PlayerMovement>();
             _playerAttack = player.GetComponent<PlayerAttack>();
+            _playerInputHandler = player.GetComponent<PlayerInputHandler>();
         }
     }
     //============== Game Logic ====================
