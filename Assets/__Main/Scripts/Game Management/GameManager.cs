@@ -43,7 +43,8 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
-        _playerInputHandler.enabled = false;
+        _playerMovement.DisableMovement();
+        _playerAttack.DisableOffense();
     }
 
     public void ResumeGame()
@@ -52,7 +53,8 @@ public class GameManager : MonoBehaviour
         isGamePaused = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        _playerInputHandler.enabled = true;
+        _playerMovement.EnableMovement();
+        _playerAttack.EnableOffense();
     }
 
     public void RestartCurrentScene()
@@ -80,7 +82,7 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "PlayerTestScene") //What To Do on level scene
+        if (scene.name == "PlayerTestScene" || scene.name == "OmarPlayScene" || scene.name == "MohammedPlayScene") //What To Do on level scene
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             _playerMovement = player.GetComponent<PlayerMovement>();
