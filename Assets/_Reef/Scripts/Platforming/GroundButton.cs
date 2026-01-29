@@ -14,6 +14,7 @@ public class GroundButton : MonoBehaviour
     private void Awake()
     {
         _particleSystem = GetComponent<ParticleSystem>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     void OnTriggerEnter(Collider other)
