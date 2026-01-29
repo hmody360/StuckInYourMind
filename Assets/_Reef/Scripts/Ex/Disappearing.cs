@@ -9,10 +9,13 @@ public class Disappearing : MonoBehaviour
     Renderer mesh;
     bool used = false;
 
+    private AudioSource _audioSource;
+
     void Awake()
     {
         col = GetComponent<Collider>();
         mesh = GetComponent<Renderer>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     void OnCollisionEnter(Collision collision)
@@ -20,6 +23,10 @@ public class Disappearing : MonoBehaviour
         if (collision.gameObject.CompareTag("Player") && !used)
         {
             used = true;
+            if(_audioSource != null)
+            {
+                _audioSource.PlayOneShot(_audioSource.clip);
+            }
             StartCoroutine(DisappearAndReturn());
         }
     }
