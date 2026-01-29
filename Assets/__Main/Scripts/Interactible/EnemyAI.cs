@@ -43,6 +43,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
     //Animator
     private Animator _enemyAnimator;
     private Rigidbody _enemyRB;
+    private WinChecker _winChecker;
+    private EnemyUI _enemyUI;
 
     [SerializeField] private AudioClip[] _damageAudioClips;
 
@@ -54,11 +56,13 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         _enemyAnimator = GetComponent<Animator>();
         _enemyRB = GetComponent<Rigidbody>();
+        _enemyUI = GetComponentInChildren<EnemyUI>();
     }
     void Start()
     {
         _enemyRB.freezeRotation = true;
         _player = GameObject.FindGameObjectWithTag("Player").transform;
+        _winChecker = GameObject.FindGameObjectWithTag("WinChecker").GetComponent<WinChecker>();
 
         // Enemy starts patrolling towards point A
         _currentTarget = _pointA;
@@ -78,6 +82,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
         {
             Debug.LogError(" NavMeshAgent is missing on this enemy");
         }
+
+        _enemyUI.UpdateHealthSlider(_currentHealth, _maxHealth);
     }
     void Update()
     {
@@ -133,7 +139,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
                 isChasing = false;
                 DetectPlayed = false; // detect sound can play again next time
                 _agent.speed = _patrolSpeed;
-
+                _enemyUI.HideHealthSlider();
                 _agent.SetDestination(_currentTarget.position);// resume patrolling btween points A and B
             }
         }
@@ -244,6 +250,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         _currentHealth -= damage;
         if (_currentHealth <= 0)
         {
+            _currentHealth = 0;
             onDeath();
         }
         else
@@ -251,6 +258,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
             _enemyAnimator.SetTrigger("KnockbackTrigger");
             _DamageSFX.PlayOneShot(_damageAudioClips[0]);
         }
+        _enemyUI.ShowHealthSlider();
+        _enemyUI.UpdateHealthSlider(_currentHealth, _maxHealth);
 
         if (!isChasing)
         {
@@ -261,6 +270,15 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         if(_isDead) return;
 
+        if(_winChecker != null)
+        {
+            GameObject self = _winChecker._EnemiesList.Find(item => item == gameObject);
+            if (self != null)
+            {
+                _winChecker._EnemiesList.Remove(self);
+            }
+        }
+        
         // remove enemy from the scene & stop all actions
         _agent.isStopped = true;
         _agent.enabled = false;
@@ -271,7 +289,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         _PatrolSFX.Stop();
         _DamageSFX.PlayOneShot(_damageAudioClips[1]);
         _isDead = true;
-        Destroy(transform.parent.gameObject, 1f);
+        Destroy(transform.parent.gameObject, 2f);
     }
 
     // debug gizmos
