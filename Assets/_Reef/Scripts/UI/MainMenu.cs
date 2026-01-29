@@ -1,42 +1,24 @@
-//using UnityEngine;
-//using UnityEngine.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-//public class MainMenu : MonoBehaviour
-//{
+public class MainMenu : MonoBehaviour
+{
 
-//    public GameObject mainMenuPage;
-//    public GameObject settingsPage;
+    public void StartGameM()
+    {
+        //AudioManager.instance.PlayGameMusic();
 
-//    void Start()
-//    {
-//        ShowMainMenu();
-//    }
+        SceneManager.LoadScene("SampleScene");
+    }
+    public void StartGameO()
+    {
+       //AudioManager.instance.PlayGameMusic();
 
-//    public void ShowMainMenu()
-//    {
-//        mainMenuPage.SetActive(true);
-//        settingsPage.SetActive(false);
-//    }
+        SceneManager.LoadScene("SampleScene");
+    }
 
-//    public void StartGame()
-//    {
-//        AudioManager.instance.PlayGameMusic();
-
-//        SceneManager.LoadScene("");
-//    }
-
-//    public void OpenSettings()
-//    {
-//        settingsPage.SetActive(true);
-//    }
-
-//    public void CloseSettings()
-//    {
-//        settingsPage.SetActive(false);
-//    }
-
-//    public void ExitGame()
-//    {
-//        Application.Quit();
-//    }
-//}
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+}

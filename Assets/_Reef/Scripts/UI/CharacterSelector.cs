@@ -1,45 +1,34 @@
+
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class CharacterSelector : MonoBehaviour
+public class ClickTrigger : MonoBehaviour
 {
-    [Header("Settings")]
-    public string sceneName = "GameScene"; 
-    //public float hoverScale = 1.1f;      
-
-    [Header("Optional Effects")]
-    public GameObject hoverEffect;        
-
-    private Vector3 originalScale;         
-
-    void Start()
-    {
-        originalScale = transform.localScale;
-
-        if (hoverEffect != null)
-            hoverEffect.SetActive(false);
-    }
+    
+    public CameraControl manager;
 
     
+    public bool isCharacter2;
+    public bool isCharacter3;
+
     void OnMouseEnter()
     {
-      //  transform.localScale = originalScale * hoverScale;
-
-        if (hoverEffect != null)
-            hoverEffect.SetActive(true);
-    }
-
-
-    void OnMouseExit()
-    {
-        transform.localScale = originalScale;
-
-        if (hoverEffect != null)
-            hoverEffect.SetActive(false);
+     
     }
 
     void OnMouseDown()
     {
-        SceneManager.LoadScene(sceneName);
+        if (isCharacter2)
+        {
+            manager.GoToCam4();
+        }
+        else if (isCharacter3)
+        {
+            manager.GoToCam3();
+        }
+        else
+        {
+           
+            manager.GoToMain();
+        }
     }
 }
