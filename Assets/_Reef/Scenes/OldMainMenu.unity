@@ -282,7 +282,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
   m_sharedMaterial: {fileID: 7415251707543124634, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 7415251707543124634, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -859,9 +860,13 @@ MonoBehaviour:
   mainCam: {fileID: 1246769155}
   cam2: {fileID: 664081737}
   cam3: {fileID: 2124981965}
+  cam4: {fileID: 0}
+  cam5: {fileID: 0}
   mainCanvas: {fileID: 876268769}
   canvas2: {fileID: 1998552748}
   canvas3: {fileID: 11291160}
+  canvas4: {fileID: 0}
+  canvas5: {fileID: 0}
 --- !u!4 &591380064
 Transform:
   m_ObjectHideFlags: 0
@@ -1205,7 +1210,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
   m_sharedMaterial: {fileID: 7415251707543124634, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 7415251707543124634, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -1770,8 +1776,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fc183cab1e981e4b9052ea2b92417a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSelector
-  sceneName: SampleScene
-  hoverEffect: {fileID: 0}
+  manager: {fileID: 0}
+  isMohammed: 0
+  isOmar: 0
 --- !u!1001 &794490630
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1951,7 +1958,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
   m_sharedMaterial: {fileID: 7415251707543124634, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 7415251707543124634, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -2973,8 +2981,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fc183cab1e981e4b9052ea2b92417a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSelector
-  sceneName: SampleScene
-  hoverEffect: {fileID: 0}
+  manager: {fileID: 0}
+  isMohammed: 0
+  isOmar: 0
 --- !u!4 &1171295353 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 622319051284528376, guid: 84d17ae19a73ae84281901999ae4bdb1, type: 3}
@@ -3306,8 +3315,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fc183cab1e981e4b9052ea2b92417a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSelector
-  sceneName: ExampieSceneReef
-  hoverEffect: {fileID: 0}
+  manager: {fileID: 0}
+  isMohammed: 0
+  isOmar: 0
 --- !u!1 &1562608657
 GameObject:
   m_ObjectHideFlags: 0
@@ -3872,7 +3882,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
   m_sharedMaterial: {fileID: 7415251707543124634, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 7415251707543124634, guid: 48d87fa9ead901e408ce530818dc66e2, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
