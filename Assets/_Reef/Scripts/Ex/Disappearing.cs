@@ -6,13 +6,13 @@ public class Disappearing : MonoBehaviour
     public float respawnTime = 3f;
 
     Collider col;
-    MeshRenderer mesh;
+    Renderer mesh;
     bool used = false;
 
-    void Start()
+    void Awake()
     {
         col = GetComponent<Collider>();
-        mesh = GetComponent<MeshRenderer>();
+        mesh = GetComponent<Renderer>();
     }
 
     void OnCollisionEnter(Collision collision)

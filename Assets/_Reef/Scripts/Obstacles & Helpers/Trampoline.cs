@@ -6,7 +6,7 @@ public class Trampoline : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Player")&& Input.GetKeyDown(KeyCode.Space))
+        if (other.CompareTag("Player"))
         {
             Rigidbody rb = other.GetComponent<Rigidbody>();
 
