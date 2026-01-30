@@ -997,7 +997,7 @@ MonoBehaviour:
   _chaseSpeed: 6
   _chaseRange: 8
   _chaseLoseRange: 15
-  _viewAngle: 45
+  _viewAngle: 90
   _maxHealth: 30
   _currentHealth: 0
   _isDead: 0

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7912990978601876291}
   - component: {fileID: 2737828170219883511}
   - component: {fileID: 9187488436616449502}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Icosphere.033 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 5619035650041479907}
   - component: {fileID: 4622181320970439064}
   - component: {fileID: 1160521502257210706}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Icosphere.032 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,9 +328,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8083859813781953475}
     m_Modifications:
+    - target: {fileID: 517120242309474887, guid: 58612c173e9f1614e8e07ea151f8f809, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3458471764843572635, guid: 58612c173e9f1614e8e07ea151f8f809, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 5821401858632864730, guid: 58612c173e9f1614e8e07ea151f8f809, type: 3}
       propertyPath: m_Name
       value: WoodLand_Tree_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5821401858632864730, guid: 58612c173e9f1614e8e07ea151f8f809, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6593857582831241568, guid: 58612c173e9f1614e8e07ea151f8f809, type: 3}
       propertyPath: m_LocalScale.x
@@ -387,6 +399,10 @@ PrefabInstance:
     - target: {fileID: 6593857582831241568, guid: 58612c173e9f1614e8e07ea151f8f809, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8988860304150384045, guid: 58612c173e9f1614e8e07ea151f8f809, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -462,6 +478,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: WoodLand_Fence_01
       objectReference: {fileID: 0}
+    - target: {fileID: 2190254160721418304, guid: ba63fe34122edd5449e1dbd0943e9438, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5786940753775748394, guid: ba63fe34122edd5449e1dbd0943e9438, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -480,6 +504,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8083859813781953475}
     m_Modifications:
+    - target: {fileID: 5307474314605687145, guid: 530321166315ede438b59b0542114214, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 6182505441726310708, guid: 530321166315ede438b59b0542114214, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.6666667
@@ -535,6 +563,10 @@ PrefabInstance:
     - target: {fileID: 6811548605056578446, guid: 530321166315ede438b59b0542114214, type: 3}
       propertyPath: m_Name
       value: WoodLand_Mushroom_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6811548605056578446, guid: 530321166315ede438b59b0542114214, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -609,6 +641,14 @@ PrefabInstance:
     - target: {fileID: 2190254160721418304, guid: ba63fe34122edd5449e1dbd0943e9438, type: 3}
       propertyPath: m_Name
       value: WoodLand_Fence_01 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2190254160721418304, guid: ba63fe34122edd5449e1dbd0943e9438, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5786940753775748394, guid: ba63fe34122edd5449e1dbd0943e9438, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

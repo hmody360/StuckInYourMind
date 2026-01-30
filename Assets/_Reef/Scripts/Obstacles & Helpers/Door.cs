@@ -23,6 +23,15 @@ public class Door : MonoBehaviour
         openRot = Quaternion.Euler(0, openAngle, 0) * closedRot;
     }
 
+    private void OnEnable()
+    {
+        PlayerInventory.OnMainCollectiblesCollected += OpenDoor;
+    }
+
+    private void OnDisable()
+    {
+        PlayerInventory.OnMainCollectiblesCollected -= OpenDoor;
+    }
     public void OpenDoor()
     {
         if (isOpen || isMoving) return;

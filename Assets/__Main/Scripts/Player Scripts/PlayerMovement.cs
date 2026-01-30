@@ -129,7 +129,7 @@ public class PlayerMovement : MonoBehaviour
         _input.OnSprint += held => _sprintHeld = held;
         _input.OnCrouch += HandleCrouch;
         _input.OnSpecial += HandleSA;
-        _input.OnPause += GameUIManager.instance.TogglePauseMenu;
+        _input.OnPause += PauseUnpauseGame;
     }
 
     private void OnDisable()
@@ -139,7 +139,7 @@ public class PlayerMovement : MonoBehaviour
         _input.OnSprint -= held => _sprintHeld = held;
         _input.OnCrouch -= HandleCrouch;
         _input.OnSpecial -= HandleSA;
-        _input.OnPause -= GameUIManager.instance.TogglePauseMenu;
+        _input.OnPause -= PauseUnpauseGame;
     }
 
     private void Update()
@@ -560,6 +560,10 @@ public class PlayerMovement : MonoBehaviour
 
     //Helper Code
 
+    private void PauseUnpauseGame()
+    {
+        GameUIManager.instance.TogglePauseMenu();
+    }
     private void CheckGround()
     {
         _isGrounded = Physics.CheckSphere(transform.position + Vector3.up * _groundCheckerOffset, _groundCheckerRadius, _groundLayer); //Checking if player is on ground.

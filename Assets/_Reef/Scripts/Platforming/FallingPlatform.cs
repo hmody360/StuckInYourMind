@@ -13,6 +13,7 @@ public class FallingPlatform : PlatformBase
     public float resetDelay = 3f;
 
     private Rigidbody rb;
+    private AudioSource _audioSource;
     private Vector3 startPosition;
     private Quaternion startRotation;
     private bool triggered = false;
@@ -20,6 +21,7 @@ public class FallingPlatform : PlatformBase
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        _audioSource = GetComponent<AudioSource>();
 
         rb.isKinematic = true;
         rb.useGravity = false;
@@ -35,6 +37,10 @@ public class FallingPlatform : PlatformBase
         if (collision.gameObject.CompareTag("Player"))
         {
             triggered = true;
+            if(_audioSource != null)
+            {
+                _audioSource.PlayOneShot(_audioSource.clip);
+            }
             StartCoroutine(FallSequence());
         }
     }

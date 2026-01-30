@@ -4,6 +4,12 @@ public class Trampoline : MonoBehaviour
 {
     public float bounceForce = 15f;
 
+    private AudioSource _audioSource;
+
+    private void Awake()
+    {
+        _audioSource = GetComponent<AudioSource>();
+    }
     private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Player"))
@@ -19,6 +25,11 @@ public class Trampoline : MonoBehaviour
                 );
 
                 rb.AddForce(Vector3.up * bounceForce, ForceMode.Impulse);
+            }
+
+            if(_audioSource != null)
+            {
+                _audioSource.PlayOneShot(_audioSource.clip);
             }
         }
     }

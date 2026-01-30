@@ -4014,7 +4014,7 @@ GameObject:
   - component: {fileID: 393311284815381473}
   m_Layer: 0
   m_Name: HitPoint
-  m_TagString: Untagged
+  m_TagString: Impact
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4500,9 +4500,9 @@ GameObject:
   - component: {fileID: 6733545601283128793}
   - component: {fileID: 7395089676877347184}
   - component: {fileID: 1671711003774454343}
-  - component: {fileID: 6936272878258755375}
   - component: {fileID: 4761619476123174168}
   - component: {fileID: 138016390820157776}
+  - component: {fileID: 5783093050082278917}
   m_Layer: 0
   m_Name: OmarAlterPlayer
   m_TagString: Player
@@ -4563,7 +4563,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8849191074435166540}
   serializedVersion: 5
-  m_Mass: 2
+  m_Mass: 5
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -4600,10 +4600,10 @@ MonoBehaviour:
   runSpeed: 15
   crouchSpeed: 5
   rotationSpeed: 5
-  jumpForce: 20
-  doubleJumpForce: 5
-  maxStamina: 20
-  currentStamina: 20
+  jumpForce: 35
+  doubleJumpForce: 30
+  maxStamina: 10
+  currentStamina: 10
   NormalHeight: 16.17626
   crouchHeight: 10.53119
   NormalCenter: 8.077985
@@ -4727,7 +4727,7 @@ MonoBehaviour:
   _currentLives: 0
   _invincibilityTime: 4
   _isInvincible: 0
-  _currentCheckPoint: {fileID: 3280285293435485736}
+  _currentCheckPoint: {x: 0, y: 0, z: 0}
   _respawnEffect: {fileID: 3280285293435485733}
   _damageAudioSource: {fileID: 5160139631493199165}
   _damageAudioClips:
@@ -4736,36 +4736,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 276ffccf5831bc046b7773639e866de1, type: 3}
   - {fileID: 8300000, guid: f55836a4e13c1564a9947ac6450ab2ce, type: 3}
   - {fileID: 8300000, guid: bb91822d57eb07446816b3df365ef337, type: 3}
---- !u!114 &6936272878258755375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8849191074435166540}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
-  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_NotificationBehavior: 3
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &4761619476123174168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4800,6 +4770,36 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5783093050082278917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8849191074435166540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: df70fa95-8a34-4494-b137-73ab6b9c7d37
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &8875117861537482068
 GameObject:
   m_ObjectHideFlags: 0

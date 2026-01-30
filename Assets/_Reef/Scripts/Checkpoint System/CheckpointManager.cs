@@ -4,8 +4,9 @@ public class CheckpointManager : MonoBehaviour
 {
     public static CheckpointManager Instance;
 
-    private Vector3 lastCheckpoint;
-    private Transform player;
+    private Vector3 _lastCheckpoint;
+    private Transform _player;
+    private PlayerHealth _playerHealth;
 
     private void Awake()
     {
@@ -17,22 +18,23 @@ public class CheckpointManager : MonoBehaviour
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        lastCheckpoint = player.position;
+        _player = GameObject.FindGameObjectWithTag("Player").transform;
+        _playerHealth = _player.GetComponent<PlayerHealth>();
+        _lastCheckpoint = _player.position;
     }
 
     public void SetCheckpoint(Vector3 position)
     {
-        lastCheckpoint = position;
+        _lastCheckpoint = position;
     }
 
     public void RespawnPlayer()
     {
-        Rigidbody rb = player.GetComponent<Rigidbody>();
+        Rigidbody rb = _player.GetComponent<Rigidbody>();
         if (rb != null)
             rb.linearVelocity = Vector3.zero;
 
-        player.position = lastCheckpoint;
+        _player.position = _lastCheckpoint;
     }
 
 }
