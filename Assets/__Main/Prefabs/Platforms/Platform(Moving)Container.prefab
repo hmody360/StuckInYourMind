@@ -188,7 +188,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MovingPlatform1
   pointA: {fileID: 3847601093659731043}
   pointB: {fileID: 7735860200491427817}
-  speed: 2
+  speed: 6
 --- !u!82 &1220672400614791256
 AudioSource:
   m_ObjectHideFlags: 0

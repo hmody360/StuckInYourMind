@@ -80,6 +80,10 @@ public class GameManager : MonoBehaviour
         GameUIManager.instance.ShowWinMenu();
     }
 
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "PlayerTestScene" || scene.name == "OmarPlayScene" || scene.name == "MohammedPlayScene") //What To Do on level scene
